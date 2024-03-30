@@ -4,7 +4,6 @@ import axios from "axios";
 
 export interface IService {
   service: string;
-  userId: string;
   _id: string;
 }
 
@@ -14,13 +13,17 @@ export interface IInitialState {
     services: IService[];
     page: number;
     totalServices: number;
-  } | null;
+  };
   error: string | null;
 }
 
 const initialState: IInitialState = {
   isLoading: false,
-  serviceData: null,
+  serviceData: {
+    services: [],
+    page: 0,
+    totalServices: 0,
+  },
   error: null,
 };
 

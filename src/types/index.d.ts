@@ -1,5 +1,5 @@
 declare type RegisterParams = {
-  userId: string;
+  userName: string;
   email: string;
   password: string;
 };
@@ -7,6 +7,7 @@ declare type RegisterParams = {
 declare type LoginParams = {
   email: string;
   password: string;
+  role: "admin" | "customer";
 };
 
 declare type GetCustomerParams = {

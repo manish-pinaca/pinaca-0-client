@@ -1,20 +1,28 @@
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-refresh/only-export-components */
 import { useEffect, useState } from "react";
-import { BiSolidUser } from "react-icons/bi";
 import { GrServices } from "react-icons/gr";
 import { MdOutlineManageHistory } from "react-icons/md";
 import { io } from "socket.io-client";
 
+import {
+  IService,
+  fetchServiceData,
+} from "@/app/features/services/serviceSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import ActiveCustomers from "@/components/ActiveCustomers";
 import Card from "@/components/Card";
 import Navbar from "@/components/Navbar";
 import Report from "@/components/Report";
 import Sidebar from "@/components/Sidebar";
-import Services from "@/components/Services";
-import { fetchServiceData } from "@/app/features/services/serviceSlice";
-import { RequestedServices, fetchAdmin } from "@/app/features/auth/authSlice";
+import ActiveServices from "@/components/ActiveServices";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 import {
   ColumnDef,
   VisibilityState,
@@ -23,14 +31,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import PaginatedItem from "@/components/PaginatedItem";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -39,151 +40,151 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import PaginatedItem from "@/components/PaginatedItem";
+import { Badge } from "@/components/ui/badge";
+import { fetchCustomer } from "@/app/features/auth/authSlice";
 import { toast } from "@/components/ui/use-toast";
 
 const socket = io("http://localhost:5000");
 
-const Accept = ({ row }: { row: any }) => {
-  const dispatch = useAppDispatch();
-  const adminId = useAppSelector((state) => state.authReducer.admin._id);
+const Status = ({ row }: { row: any }) => {
+  const activeServices = useAppSelector(
+    (state) => state.authReducer.customer.activeServices
+  );
+  const pendingServices = useAppSelector(
+    (state) => state.authReducer.customer.pendingServices
+  );
+  const rejectedServices = useAppSelector(
+    (state) => state.authReducer.customer.rejectedServices
+  );
 
-  const acceptRequest = () => {
-    socket.emit(
-      "accept-request",
-      {
-        customerId: row.original["customerId"],
-        serviceId: row.original["serviceId"],
-        adminId,
-      },
-      (err: any, response: any) => {
-        if (err) {
-          console.log(err);
-        } else {
-          toast({
-            variant: "default",
-            title: "Service request accepted!",
-            description: response.message,
-          });
-          dispatch(fetchAdmin(adminId));
-        }
-      }
-    );
-  };
-  return <Button onClick={acceptRequest}>Accept</Button>;
-};
-
-const Reject = ({ row }: { row: any }) => {
-  const dispatch = useAppDispatch();
-  const adminId = useAppSelector((state) => state.authReducer.admin._id);
-
-  const rejectRequest = () => {
-    socket.emit(
-      "reject-request",
-      {
-        customerId: row.original["customerId"],
-        serviceId: row.original["serviceId"],
-        adminId,
-      },
-      (err: any, response: any) => {
-        if (err) {
-          console.log(err);
-        } else {
-          toast({
-            variant: "default",
-            title: "Service request rejected!",
-            description: response.message,
-          });
-          dispatch(fetchAdmin(adminId));
-        }
-      }
-    );
-  };
   return (
-    <Button variant="destructive" onClick={rejectRequest}>
-      Reject
-    </Button>
+    <>
+      {activeServices.includes(row.original["_id"]) ? (
+        <Badge>Active</Badge>
+      ) : pendingServices.includes(row.original["_id"]) ? (
+        <Badge>Pending</Badge>
+      ) : rejectedServices.includes(row.original["_id"]) ? (
+        <Badge variant={"destructive"}>Rejected</Badge>
+      ) : (
+        "-"
+      )}
+    </>
   );
 };
 
-export const columns: ColumnDef<RequestedServices>[] = [
+const Action = ({ row }: { row: any }) => {
+  const dispatch = useAppDispatch();
+
+  const customerId = useAppSelector((state) => state.authReducer.customer._id);
+  const adminId = useAppSelector((state) => state.authReducer.customer.adminId);
+
+  const activeServices = useAppSelector(
+    (state) => state.authReducer.customer.activeServices
+  );
+  const pendingServices = useAppSelector(
+    (state) => state.authReducer.customer.pendingServices
+  );
+  const rejectedServices = useAppSelector(
+    (state) => state.authReducer.customer.rejectedServices
+  );
+
+  const addServiceRequest = () => {
+    socket.emit(
+      "addServiceRequest",
+      {
+        customerId: customerId,
+        serviceId: row.original["_id"],
+        adminId,
+      },
+      (err: any, response: any) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(response);
+          toast({
+            variant: "default",
+            title: "Service request sent!",
+            description: response.message,
+          });
+          dispatch(fetchCustomer(customerId));
+        }
+      }
+    );
+  };
+
+  return (
+    <>
+      {activeServices.includes(row.original["_id"]) ? (
+        <Button variant="destructive">Deactivate</Button>
+      ) : pendingServices.includes(row.original["_id"]) ? (
+        <Button variant="destructive">Revoke</Button>
+      ) : (
+        <Button
+          variant="primary"
+          onClick={addServiceRequest}
+          disabled={rejectedServices.includes(row.original["_id"])}
+        >
+          Add Service
+        </Button>
+      )}
+    </>
+  );
+};
+
+export const columns: ColumnDef<IService>[] = [
   {
-    accessorKey: "customerName",
-    header: "Customer Name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("customerName")}</div>
-    ),
-  },
-  {
-    accessorKey: "serviceName",
+    accessorKey: "service",
     header: "Service Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("serviceName")}</div>
+      <div className="capitalize">{row.getValue("service")}</div>
     ),
   },
   {
-    accessorKey: "requestedON",
-    header: "Requested On",
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <Status row={row} />,
+  },
+  {
+    accessorKey: "activateOn",
+    header: "Activate On",
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue("requestedOn") ? row.getValue("requestedOn") : "-"}
+        {row.getValue("activateOn") ? row.getValue("activateOn") : "-"}
       </div>
     ),
   },
   {
     accessorKey: "action",
     header: "Action",
-    cell: ({ row }) => (
-      <div className="flex gap-2">
-        <Accept row={row} />
-        <Reject row={row} />
-      </div>
-    ),
+    cell: ({ row }) => <Action row={row} />,
   },
 ];
 
-const Dashboard = () => {
+const CustomerDashboard = () => {
   const limit = 8;
 
-  const dispatch = useAppDispatch();
-
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [active, setActive] = useState<string>("overview");
   const [page, setPage] = useState<number>(1);
-  const [requestedServicesData, setRequestedServicesData] = useState<
-    RequestedServices[]
-  >([]);
 
-  const adminId = useAppSelector((state) => state.authReducer.admin._id);
+  const dispatch = useAppDispatch();
+  const [active, setActive] = useState<string>("overview");
 
-  const customerData = useAppSelector(
-    (state) => state.customerReducer.customerData
+  const customerId = useAppSelector((state) => state.authReducer.customer._id);
+  const pendingRequests = useAppSelector(
+    (state) => state.authReducer.customer.pendingServices
   );
 
   const totalServices = useAppSelector(
     (state) => state.serviceReducer.serviceData?.totalServices
   );
 
-  const requestedServices = useAppSelector(
-    (state) => state.authReducer.admin.requestedServices
+  const services = useAppSelector(
+    (state) => state.serviceReducer.serviceData?.services
   );
 
-  useEffect(() => {
-    dispatch(fetchServiceData({ page: 1, limit: 8 }));
-  }, [dispatch]);
-
-  useEffect(() => {
-    socket.on("addServiceRequest", async () => {
-      await dispatch(fetchAdmin(adminId));
-    });
-  }, [dispatch, adminId]);
-
-  useEffect(() => {
-    dispatch(fetchAdmin(adminId));
-  }, [dispatch, adminId]);
-
   const table = useReactTable({
-    data: requestedServicesData,
+    data: services,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -194,48 +195,39 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
+    dispatch(fetchCustomer(customerId));
+    dispatch(fetchServiceData({ page, limit }));
+  }, [dispatch, page, customerId]);
 
-    setRequestedServicesData(requestedServices.slice(startIndex, endIndex));
-  }, [page, requestedServices]);
-
+  useEffect(() => {
+    socket.on("accepted-request", () => {
+      dispatch(fetchCustomer(customerId));
+    });
+  }, [dispatch, customerId]);
   return (
     <div className="flex bg-indigo-50 h-screen">
       <Sidebar active={active} setActive={setActive} />
       <div className="w-full">
         <Navbar />
-        <div className="flex flex-wrap px-8 justify-between mt-8">
-          <Card
-            Icon={BiSolidUser}
-            value={Number(customerData?.totalCustomers)}
-            label={"Total Customers"}
-          />
-          <Card
-            Icon={GrServices}
-            value={Number(totalServices)}
-            label="Total Services"
-          />
+        <div className="flex flex-wrap px-8 gap-6 mt-8">
           <Dialog>
             <DialogTrigger className="lg:w-[30%] flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
               <div className="w-24 h-24 bg-emerald-100 rounded-full flex justify-center items-center">
-                <MdOutlineManageHistory size={32} />
+                <GrServices size={32} />
               </div>
               <div>
-                <p className="text-5xl text-left">
-                  {requestedServices?.length ? requestedServices.length : 0}
-                </p>
-                <p className="text-gray-500">{"New Request"}</p>
+                <p className="text-5xl text-left">{totalServices}</p>
+                <p className="text-gray-500">{"Total Services"}</p>
               </div>
             </DialogTrigger>
             <DialogContent className="max-w-max">
               <DialogHeader className="mt-4">
                 <div className="flex justify-between">
-                  <DialogTitle>New Requests</DialogTitle>
+                  <DialogTitle>Total Services</DialogTitle>
                   <PaginatedItem
                     setPage={setPage}
                     limit={limit}
-                    totalItems={requestedServices?.length}
+                    totalItems={totalServices}
                   />
                 </div>
               </DialogHeader>
@@ -292,9 +284,14 @@ const Dashboard = () => {
               </Table>
             </DialogContent>
           </Dialog>
+          <Card
+            Icon={MdOutlineManageHistory}
+            value={pendingRequests.length}
+            label="Pending Request"
+          />
         </div>
         <div className="mt-8 px-8 flex flex-wrap gap-6">
-          {active === "overview" ? <ActiveCustomers /> : <Services />}
+          <ActiveServices />
           <Report />
         </div>
       </div>
@@ -302,4 +299,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default CustomerDashboard;

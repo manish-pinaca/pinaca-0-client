@@ -12,7 +12,7 @@ import { toast } from "../components/ui/use-toast";
 import { ToastAction } from "../components/ui/toast";
 
 interface IError {
-  userId?: string;
+  userName?: string;
   email?: string;
   password?: string;
 }
@@ -21,7 +21,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector((state) => state.authReducer.isLoading);
-  const [userId, setUserId] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordType, setPasswordType] = useState<string>("password");
@@ -41,8 +41,8 @@ const Signup = () => {
 
       let newErrors = {};
 
-      if (validator.isEmpty(userId)) {
-        newErrors = { ...newErrors, userId: "UserId is required" };
+      if (validator.isEmpty(userName)) {
+        newErrors = { ...newErrors, userName: "User name is required" };
       }
 
       if (validator.isEmpty(email) || !validator.isEmail(email)) {
@@ -70,7 +70,7 @@ const Signup = () => {
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
       } else {
-        dispatch(register({ userId, email, password }))
+        dispatch(register({ userName, email, password }))
           .then((res: any) => {
             if (res.error) {
               toast({
@@ -94,7 +94,7 @@ const Signup = () => {
           });
       }
     },
-    [userId, email, password, dispatch, navigate]
+    [userName, email, password, dispatch, navigate]
   );
 
   return (
@@ -107,17 +107,17 @@ const Signup = () => {
           <form className="flex flex-col gap-4" onSubmit={handleRegister}>
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <Label htmlFor="email">
-                User Id<sup className="text-red-500">*</sup>
+                User Name<sup className="text-red-500">*</sup>
               </Label>
               <Input
                 type="text"
                 id="email"
-                placeholder="userId@1234"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
+                placeholder="User Name"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
               />
-              {errors.userId && (
-                <p className="text-sm italic text-red-500">{errors.userId}</p>
+              {errors.userName && (
+                <p className="text-sm italic text-red-500">{errors.userName}</p>
               )}
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">

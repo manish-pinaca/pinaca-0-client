@@ -10,6 +10,7 @@ import validator from "validator";
 import { login } from "@/app/features/auth/authSlice";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { Switch } from "@/components/ui/switch";
 
 interface IError {
   email?: string;
@@ -24,6 +25,7 @@ const Login = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordType, setPasswordType] = useState<string>("password");
   const [errors, setErrors] = useState<IError>({});
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const togglePasswordType = useCallback(
     () =>
@@ -64,7 +66,9 @@ const Login = () => {
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
       } else {
-        dispatch(login({ email, password }))
+        dispatch(
+          login({ email, password, role: isAdmin ? "admin" : "customer" })
+        )
           .then((res: any) => {
             if (res.error) {
               toast({
@@ -88,7 +92,7 @@ const Login = () => {
           });
       }
     },
-    [email, password, dispatch, navigate]
+    [email, password, dispatch, navigate, isAdmin]
   );
 
   return (
@@ -141,6 +145,13 @@ const Login = () => {
               {errors.password && (
                 <p className="text-sm italic text-red-500">{errors.password}</p>
               )}
+            </div>
+            <div className="flex w-full max-w-sm items-center justify-between">
+              <p>
+                Are you logging in as an{" "}
+                <span className="font-bold">Admin</span>?
+              </p>
+              <Switch checked={isAdmin} onCheckedChange={setIsAdmin} />
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
               {isLoading ? (
