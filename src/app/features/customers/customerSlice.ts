@@ -3,9 +3,13 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 export interface ICustomer {
-  customerName: string;
-  userId: string;
   _id: string;
+  customerName: string;
+  adminId: string;
+  userEmail: string;
+  activeServices: string[];
+  pendingServices: string[];
+  rejectedServices: string[];
 }
 
 export interface IInitialState {

@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { BiSolidUser } from "react-icons/bi";
 import { GrServices } from "react-icons/gr";
 import { MdOutlineManageHistory } from "react-icons/md";
 import { io } from "socket.io-client";
@@ -41,6 +40,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import Customers from "@/components/Customers";
 
 const socket = io("http://localhost:5000");
 
@@ -156,10 +156,6 @@ const Dashboard = () => {
 
   const adminId = useAppSelector((state) => state.authReducer.admin._id);
 
-  const customerData = useAppSelector(
-    (state) => state.customerReducer.customerData
-  );
-
   const totalServices = useAppSelector(
     (state) => state.serviceReducer.serviceData?.totalServices
   );
@@ -206,11 +202,7 @@ const Dashboard = () => {
       <div className="w-full">
         <Navbar />
         <div className="flex flex-wrap px-8 justify-between mt-8">
-          <Card
-            Icon={BiSolidUser}
-            value={Number(customerData?.totalCustomers)}
-            label={"Total Customers"}
-          />
+          <Customers />
           <Card
             Icon={GrServices}
             value={Number(totalServices)}

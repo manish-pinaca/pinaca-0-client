@@ -5,6 +5,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import PaginatedItem from "./PaginatedItem";
 import { useEffect, useState } from "react";
+import ActiveCustomer from "./ActiveCustomer";
 
 const ActiveCustomers = () => {
   const limit = 8;
@@ -32,17 +33,7 @@ const ActiveCustomers = () => {
         {customerData?.customers &&
           customerData?.customers.length > 0 &&
           customerData?.customers.map((customer: ICustomer) => (
-            <div
-              key={customer._id}
-              className="rounded-md border border-gray-500 p-2"
-            >
-              <p className="text-xs text-gray-500 leading-none">
-                Customer name
-              </p>
-              <p className="text-xl leading-normal font-normal">
-                {customer.customerName}
-              </p>
-            </div>
+            <ActiveCustomer key={customer._id} customer={customer} />
           ))}
       </div>
     </div>

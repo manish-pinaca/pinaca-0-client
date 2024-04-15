@@ -5,9 +5,16 @@ import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import AccountMenu from "./AccountMenu";
 import { useCallback, useState } from "react";
+import { useAppSelector } from "@/app/hooks";
 
 const Navbar = () => {
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
+  const userRole = useAppSelector((state) => state.authReducer.role);
+  const userName = useAppSelector((state) =>
+    userRole === "customer"
+      ? state.authReducer.customer.customerName
+      : state.authReducer.admin.name
+  );
 
   const toggleAccountMenu = useCallback(() => {
     setShowAccountMenu((current) => !current);
@@ -21,19 +28,19 @@ const Navbar = () => {
           className="bg-inherit outline-none pl-8"
         />
       </div>
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-4 items-center justify-end">
         <div>
           <IoMdNotificationsOutline size={28} />
         </div>
         <div
-          className="flex gap-3 items-center cursor-pointer"
+          className="flex gap-3 items-center cursor-pointer justify-end w-3/4"
           onClick={toggleAccountMenu}
         >
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <p className="text-xl font-normal">User 1</p>
+          <p className="text-xl font-normal text-center">{userName}</p>
           <IoChevronDown
             className={`w-4 transition ${
               showAccountMenu ? "-rotate-180" : "rotate-0"

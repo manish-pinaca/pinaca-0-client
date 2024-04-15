@@ -12,7 +12,6 @@ import {
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import Card from "@/components/Card";
 import Navbar from "@/components/Navbar";
-import Report from "@/components/Report";
 import Sidebar from "@/components/Sidebar";
 import ActiveServices from "@/components/ActiveServices";
 import {
@@ -44,6 +43,7 @@ import PaginatedItem from "@/components/PaginatedItem";
 import { Badge } from "@/components/ui/badge";
 import { fetchCustomer } from "@/app/features/auth/authSlice";
 import { toast } from "@/components/ui/use-toast";
+import CustomerReport from "@/components/CustomerReport";
 
 const socket = io("http://localhost:5000");
 
@@ -164,6 +164,7 @@ export const columns: ColumnDef<IService>[] = [
 const CustomerDashboard = () => {
   const limit = 8;
 
+  const [open, setOpen] = useState<boolean>(false);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [page, setPage] = useState<number>(1);
 
@@ -171,6 +172,11 @@ const CustomerDashboard = () => {
   const [active, setActive] = useState<string>("overview");
 
   const customerId = useAppSelector((state) => state.authReducer.customer._id);
+
+  const activeServices = useAppSelector(
+    (state) => state.authReducer.customer.activeServices
+  );
+
   const pendingRequests = useAppSelector(
     (state) => state.authReducer.customer.pendingServices
   );
@@ -204,13 +210,19 @@ const CustomerDashboard = () => {
       dispatch(fetchCustomer(customerId));
     });
   }, [dispatch, customerId]);
+
+  useEffect(() => {
+    if (!open) {
+      setPage(1);
+    }
+  }, [open]);
   return (
     <div className="flex bg-indigo-50 h-screen">
       <Sidebar active={active} setActive={setActive} />
       <div className="w-full">
         <Navbar />
         <div className="flex flex-wrap px-8 gap-6 mt-8">
-          <Dialog>
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger className="lg:w-[30%] flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
               <div className="w-24 h-24 bg-emerald-100 rounded-full flex justify-center items-center">
                 <GrServices size={32} />
@@ -285,14 +297,19 @@ const CustomerDashboard = () => {
             </DialogContent>
           </Dialog>
           <Card
+            Icon={GrServices}
+            value={activeServices?.length}
+            label="Active Services"
+          />
+          <Card
             Icon={MdOutlineManageHistory}
-            value={pendingRequests.length}
+            value={pendingRequests?.length}
             label="Pending Request"
           />
         </div>
         <div className="mt-8 px-8 flex flex-wrap gap-6">
           <ActiveServices />
-          <Report />
+          <CustomerReport />
         </div>
       </div>
     </div>

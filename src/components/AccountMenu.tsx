@@ -1,5 +1,5 @@
 import { logout } from "@/app/features/auth/authSlice";
-import { useAppDispatch } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import React from "react";
 
 interface IAccountMenuProps {
@@ -8,6 +8,12 @@ interface IAccountMenuProps {
 
 const AccountMenu: React.FC<IAccountMenuProps> = ({ visible }) => {
   const dispatch = useAppDispatch();
+  const userRole = useAppSelector((state) => state.authReducer.role);
+  const userName = useAppSelector((state) =>
+    userRole === "customer"
+      ? state.authReducer.customer.customerName
+      : state.authReducer.admin.name
+  );
 
   if (!visible) return;
   return (
@@ -15,7 +21,7 @@ const AccountMenu: React.FC<IAccountMenuProps> = ({ visible }) => {
       <div className="flex flex-col gap-3">
         <div className="px-3 group/item flex flex-row gap-3 items-center w-full">
           <p className="text-white text-sm group-hover/item:underline">
-            User 1
+            {userName}
           </p>
         </div>
       </div>
