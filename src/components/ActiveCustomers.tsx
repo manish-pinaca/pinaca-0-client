@@ -23,13 +23,19 @@ const ActiveCustomers = () => {
     dispatch(fetchCustomerData({ page, limit }));
   }, [dispatch, page]);
   return (
-    <div className="w-[70%] bg-white p-8 rounded-sm flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <p className="text-xl font-medium">Active Customer</p>
-        <PaginatedItem setPage={setPage} totalItems={totalCustomers} limit={limit} />
+    <div className="w-[70%] h-full overflow-auto bg-white px-8 py-4 rounded-sm flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <p className="text-xl font-medium">Active Customer</p>
+          <PaginatedItem
+            setPage={setPage}
+            totalItems={totalCustomers}
+            limit={limit}
+          />
+        </div>
+        <hr className="border border-gray-200" />
       </div>
-      <hr className="border border-gray-200" />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 overflow-auto">
         {customerData?.customers &&
           customerData?.customers.length > 0 &&
           customerData?.customers.map((customer: ICustomer) => (

@@ -37,7 +37,7 @@ const CustomerReport = () => {
       });
   }, [customerId, serviceId]);
   return (
-    <div className="w-[28%] bg-white p-8 rounded-sm flex flex-col gap-4">
+    <div className="w-[25%] bg-white p-8 rounded-sm flex flex-col gap-4">
       <p className="text-xl font-medium">Generate Report</p>
       <hr className="border border-gray-200" />
       <div className="flex flex-col justify-between gap-3 h-full">
@@ -46,11 +46,13 @@ const CustomerReport = () => {
             <SelectValue placeholder="Select Service" />
           </SelectTrigger>
           <SelectContent>
-            {activeServices &&
-              activeServices?.length > 0 &&
+            {activeServices && activeServices?.length > 0 ? (
               activeServices.map((service: string, index: number) => (
                 <SelectServiceItem key={index} serviceId={service} />
-              ))}
+              ))
+            ) : (
+              <p>You don't have any active service.</p>
+            )}
           </SelectContent>
         </Select>
         <Button className="w-full" variant={"primary"} onClick={downloadReport}>

@@ -42,7 +42,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import Customers from "@/components/Customers";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://pinaca-0-server.onrender.com");
 
 const Accept = ({ row }: { row: any }) => {
   const dispatch = useAppDispatch();
@@ -201,93 +201,95 @@ const Dashboard = () => {
       <Sidebar active={active} setActive={setActive} />
       <div className="w-full">
         <Navbar />
-        <div className="flex flex-wrap px-8 justify-between mt-8">
-          <Customers />
-          <Card
-            Icon={GrServices}
-            value={Number(totalServices)}
-            label="Total Services"
-          />
-          <Dialog>
-            <DialogTrigger className="lg:w-[30%] flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
-              <div className="w-24 h-24 bg-emerald-100 rounded-full flex justify-center items-center">
-                <MdOutlineManageHistory size={32} />
-              </div>
-              <div>
-                <p className="text-5xl text-left">
-                  {requestedServices?.length ? requestedServices.length : 0}
-                </p>
-                <p className="text-gray-500">{"New Request"}</p>
-              </div>
-            </DialogTrigger>
-            <DialogContent className="max-w-max">
-              <DialogHeader className="mt-4">
-                <div className="flex justify-between">
-                  <DialogTitle>New Requests</DialogTitle>
-                  <PaginatedItem
-                    setPage={setPage}
-                    limit={limit}
-                    totalItems={requestedServices?.length}
-                  />
+        <div className="w-11/12 m-auto h-[75%] overflow-auto flex flex-col gap-6 mt-8">
+          <div className="flex flex-wrap justify-between">
+            <Customers />
+            <Card
+              Icon={GrServices}
+              value={Number(totalServices)}
+              label="Total Services"
+            />
+            <Dialog>
+              <DialogTrigger className="lg:w-[30%] h-full flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
+                <div className="w-24 h-24 bg-emerald-100 rounded-full flex justify-center items-center">
+                  <MdOutlineManageHistory size={32} />
                 </div>
-              </DialogHeader>
-              <Table className="border">
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead
-                            key={header.id}
-                            className="text-center lg:text-2xl font-medium"
-                          >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell
-                            key={cell.id}
-                            className="text-center lg:text-xl"
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
+                <div>
+                  <p className="text-5xl text-left font-medium">
+                    {requestedServices?.length ? requestedServices.length : 0}
+                  </p>
+                  <p className="text-gray-500 text-sm">{"New Request"}</p>
+                </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-max">
+                <DialogHeader className="mt-4">
+                  <div className="flex justify-between">
+                    <DialogTitle>New Requests</DialogTitle>
+                    <PaginatedItem
+                      setPage={setPage}
+                      limit={limit}
+                      totalItems={requestedServices?.length}
+                    />
+                  </div>
+                </DialogHeader>
+                <Table className="border">
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => {
+                          return (
+                            <TableHead
+                              key={header.id}
+                              className="text-center lg:text-2xl font-medium"
+                            >
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                            </TableHead>
+                          );
+                        })}
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </DialogContent>
-          </Dialog>
-        </div>
-        <div className="mt-8 px-8 flex flex-wrap gap-6">
-          {active === "overview" ? <ActiveCustomers /> : <Services />}
-          <Report />
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow key={row.id}>
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell
+                              key={cell.id}
+                              className="text-center lg:text-xl"
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          No results.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <div className="flex flex-wrap justify-between">
+            {active === "overview" ? <ActiveCustomers /> : <Services />}
+            <Report />
+          </div>
         </div>
       </div>
     </div>

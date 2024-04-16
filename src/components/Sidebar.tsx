@@ -12,10 +12,10 @@ interface SidebarProps {
 const Sidebar = ({ active, setActive }: SidebarProps) => {
   return (
     <div className="h-screen w-80 bg-white overflow-hidden">
-      <div className="flex justify-center items-center h-[10%]">
-        <img src={logo} alt="logo" className="w-1/2" />
+      <div className="flex justify-center items-center h-[20%]">
+        <img src={logo} alt="logo" className="w-3/4" />
       </div>
-      <div className="flex flex-col justify-center items-center h-[90%] w-full">
+      <div className="flex flex-col justify-center items-center h-[70%] w-full">
         <div
           onClick={() => setActive("overview")}
           className={`flex gap-4 justify-center text-2xl cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${

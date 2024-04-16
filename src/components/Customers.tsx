@@ -123,13 +123,15 @@ const Customers = () => {
   }, [open]);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="lg:w-[30%] flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
+      <DialogTrigger className="lg:w-[30%] h-full flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
         <div className="w-24 h-24 bg-emerald-100 rounded-full flex justify-center items-center">
           <BiSolidUser size={32} />
         </div>
         <div>
-          <p className="text-5xl text-left">{customerData?.totalCustomers}</p>
-          <p className="text-gray-500">{"Total Active Customers"}</p>
+          <p className="text-5xl font-medium text-left">
+            {customerData?.totalCustomers}
+          </p>
+          <p className="text-gray-500 text-sm">{"Total Active Customers"}</p>
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-max max-h-[90vh] overflow-auto">

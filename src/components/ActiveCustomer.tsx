@@ -92,7 +92,7 @@ export const columns: ColumnDef<string>[] = [
   {
     accessorKey: "activateOn",
     header: "Activate On",
-    cell: () => <p>01/01/2022</p>,
+    cell: () => <p>-</p>,
   },
   {
     accessorKey: "action",
@@ -134,7 +134,7 @@ const ActiveCustomer = ({ customer }: { customer: ICustomer }) => {
           onClick={() => fetchCustomerData(customer._id)}
         >
           <p className="text-xs text-gray-500 leading-none">Customer name</p>
-          <p className="text-xl leading-normal font-normal">
+          <p className="text-md leading-normal font-normal">
             {customer.customerName}
           </p>
         </div>
