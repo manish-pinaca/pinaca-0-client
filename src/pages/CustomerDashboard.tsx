@@ -46,7 +46,6 @@ import { toast } from "@/components/ui/use-toast";
 import CustomerReport from "@/components/CustomerReport";
 import History from "./History";
 import Settings from "./Settings";
-import Services from "@/components/Services";
 
 const socket = io("https://pinaca-0-server.onrender.com");
 
@@ -322,7 +321,7 @@ const CustomerDashboard = () => {
               {active === "overview" ? (
                 <ActiveServices />
               ) : active === "services" ? (
-                <Services />
+                <ActiveServices />
               ) : null}
               <CustomerReport />
             </div>
