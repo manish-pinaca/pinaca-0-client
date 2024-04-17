@@ -20,7 +20,7 @@ const SelectServiceItem = ({ serviceId }: { serviceId: string }) => {
 
     fetchService();
   }, [serviceId]);
-  return <SelectItem value={serviceId}>{service?.service}</SelectItem>;
+  return <SelectItem value={serviceId} key={serviceId} className="text-sm">{service?.service}</SelectItem>;
 };
 
 export default SelectServiceItem;

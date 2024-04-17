@@ -23,23 +23,25 @@ const Services = () => {
     dispatch(fetchServiceData({ page, limit }));
   }, [page, dispatch]);
   return (
-    <div className="w-[70%] h-full bg-white p-4 rounded-sm flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <p className="text-xl font-medium">Active Services</p>
-        <PaginatedItem
-          setPage={setPage}
-          limit={limit}
-          totalItems={totalServices}
-        />
+    <div className="w-[70%] overflow-auto bg-white px-8 py-4 rounded-sm flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <p className="text-xl font-medium">Active Services</p>
+          <PaginatedItem
+            setPage={setPage}
+            limit={limit}
+            totalItems={totalServices}
+          />
+        </div>
+        <hr className="border border-gray-200" />
       </div>
-      <hr className="border border-gray-200" />
       <div className="grid grid-cols-2 gap-4 overflow-auto">
         {serviceData?.services &&
           serviceData.services.length > 0 &&
           serviceData.services.map((service: IService) => (
             <div
               key={service._id}
-              className="rounded-md border border-gray-500 p-2"
+              className="rounded-md border border-gray-500 py-1 px-2"
             >
               <p className="text-xs text-gray-500 leading-none">Service name</p>
               <p className="text-base leading-normal font-normal">

@@ -21,7 +21,6 @@ const PaginatedItem = ({ setPage, totalItems, limit }: PaginatedItemProps) => {
 
   return (
     <>
-      {/* <Items currentItems={currentItems} /> */}
       <ReactPaginate
         nextLabel=">"
         onPageChange={handlePageClick}
@@ -29,11 +28,11 @@ const PaginatedItem = ({ setPage, totalItems, limit }: PaginatedItemProps) => {
         marginPagesDisplayed={2}
         pageCount={pageCount}
         previousLabel="<"
-        previousLinkClassName="w-7 h-7 rounded-full flex justify-center bg-lime-500 text-white"
-        nextLinkClassName="w-7 h-7 rounded-full flex justify-center bg-lime-500 text-white"
+        previousLinkClassName="w-6 h-6 rounded-full flex justify-center bg-lime-500 text-white"
+        nextLinkClassName="w-6 h-6 rounded-full flex justify-center bg-lime-500 text-white"
         breakLabel="..."
         containerClassName="flex gap-3"
-        activeClassName="w-7 h-7 text-center rounded-full border border-teal-300"
+        activeClassName="w-6 h-6 text-center rounded-full border border-teal-300"
         renderOnZeroPageCount={null}
       />
     </>

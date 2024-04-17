@@ -69,20 +69,22 @@ const Report = () => {
     fetchServices();
   }, []);
   return (
-    <div className="w-[25%] bg-white p-8 rounded-sm flex flex-col gap-4">
-      <p className="text-xl font-medium">Generate Report</p>
-      <hr className="border border-gray-200" />
+    <div className="w-[28%] bg-white p-4 rounded-sm flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <p className="text-xl font-medium">Generate Report</p>
+        <hr className="border border-gray-200" />
+      </div>
       <div className="flex flex-col justify-between h-full gap-3">
         <div className="flex flex-col gap-3">
           <Select onValueChange={setCustomerId}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Customer" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="h-[300px]">
               {customers.length > 0 &&
                 customers.map((customer: ICustomer) => {
                   return (
-                    <SelectItem key={customer._id} value={customer._id}>
+                    <SelectItem key={customer._id} value={customer._id} className="text-xs">
                       {customer.customerName}
                     </SelectItem>
                   );
@@ -93,10 +95,10 @@ const Report = () => {
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Service" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="h-[300px]">
               {services.length > 0 &&
                 services.map((service: IService) => (
-                  <SelectItem key={service._id} value={service._id}>
+                  <SelectItem key={service._id} value={service._id} className="text-xs">
                     {service.service}
                   </SelectItem>
                 ))}

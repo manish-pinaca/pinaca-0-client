@@ -43,6 +43,8 @@ import { toast } from "@/components/ui/use-toast";
 import Customers from "@/components/Customers";
 import History from "./History";
 import Settings from "./Settings";
+import AddCustomer from "./AddCustomer";
+import AddService from "./AddService";
 
 const socket = io("https://pinaca-0-server.onrender.com");
 
@@ -72,7 +74,11 @@ const Accept = ({ row }: { row: any }) => {
       }
     );
   };
-  return <Button onClick={acceptRequest}>Accept</Button>;
+  return (
+    <Button size={"sm"} onClick={acceptRequest}>
+      Accept
+    </Button>
+  );
 };
 
 const Reject = ({ row }: { row: any }) => {
@@ -102,7 +108,7 @@ const Reject = ({ row }: { row: any }) => {
     );
   };
   return (
-    <Button variant="destructive" onClick={rejectRequest}>
+    <Button size={"sm"} variant="destructive" onClick={rejectRequest}>
       Reject
     </Button>
   );
@@ -202,13 +208,17 @@ const Dashboard = () => {
     <div className="flex bg-indigo-50 h-screen">
       <Sidebar active={active} setActive={setActive} />
       <div className="w-full">
-        <Navbar />
+        <Navbar setActive={setActive} />
         {active === "history" ? (
           <History />
         ) : active === "settings" ? (
           <Settings />
+        ) : active === "addCustomer" ? (
+          <AddCustomer />
+        ) : active === "addService" ? (
+          <AddService />
         ) : (
-          <div className="w-11/12 m-auto h-[75%] overflow-auto flex flex-col gap-6 mt-8">
+          <div className="w-11/12 m-auto overflow-auto flex flex-col gap-4 mt-4">
             <div className="flex flex-wrap justify-between">
               <Customers />
               <Card
@@ -217,18 +227,18 @@ const Dashboard = () => {
                 label="Total Services"
               />
               <Dialog>
-                <DialogTrigger className="lg:w-[30%] h-full flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
-                  <div className="w-24 h-24 bg-emerald-100 rounded-full flex justify-center items-center">
-                    <MdOutlineManageHistory size={32} />
+                <DialogTrigger className="lg:w-[30%] h-[100px] flex gap-4 items-center rounded-md bg-white py-2 px-4 cursor-pointer">
+                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex justify-center items-center">
+                    <MdOutlineManageHistory size={24} />
                   </div>
                   <div>
-                    <p className="text-5xl text-left font-medium">
+                    <p className="text-4xl text-left font-medium">
                       {requestedServices?.length ? requestedServices.length : 0}
                     </p>
                     <p className="text-gray-500 text-sm">{"New Request"}</p>
                   </div>
                 </DialogTrigger>
-                <DialogContent className="max-w-max">
+                <DialogContent className="max-w-max max-h-[90vh] overflow-auto">
                   <DialogHeader className="mt-4">
                     <div className="flex justify-between">
                       <DialogTitle>New Requests</DialogTitle>
@@ -247,7 +257,7 @@ const Dashboard = () => {
                             return (
                               <TableHead
                                 key={header.id}
-                                className="text-center lg:text-2xl font-medium"
+                                className="text-center lg:text-xl font-medium"
                               >
                                 {header.isPlaceholder
                                   ? null
@@ -268,7 +278,7 @@ const Dashboard = () => {
                             {row.getVisibleCells().map((cell) => (
                               <TableCell
                                 key={cell.id}
-                                className="text-center lg:text-xl"
+                                className="text-center lg:text-base"
                               >
                                 {flexRender(
                                   cell.column.columnDef.cell,

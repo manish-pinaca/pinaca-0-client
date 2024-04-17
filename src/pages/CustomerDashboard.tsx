@@ -123,6 +123,7 @@ const Action = ({ row }: { row: any }) => {
         <Button variant="destructive">Revoke</Button>
       ) : (
         <Button
+          size={"sm"}
           variant="primary"
           onClick={addServiceRequest}
           disabled={rejectedServices.includes(row.original["_id"])}
@@ -164,7 +165,7 @@ export const columns: ColumnDef<IService>[] = [
 ];
 
 const CustomerDashboard = () => {
-  const limit = 8;
+  const limit = 6;
 
   const [open, setOpen] = useState<boolean>(false);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -231,18 +232,18 @@ const CustomerDashboard = () => {
           <div className="w-11/12 m-auto h-[75%] overflow-auto flex flex-col gap-6 mt-8">
             <div className="flex flex-wrap justify-between">
               <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger className="lg:w-[30%] h-full flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
-                  <div className="w-24 h-24 bg-emerald-100 rounded-full flex justify-center items-center">
-                    <GrServices size={32} />
+                <DialogTrigger className="lg:w-[30%] h-[100px] flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
+                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex justify-center items-center">
+                    <GrServices size={24} />
                   </div>
                   <div>
-                    <p className="text-5xl text-left font-medium">
+                    <p className="text-4xl text-left font-medium">
                       {totalServices}
                     </p>
                     <p className="text-gray-500 text-sm">{"Total Services"}</p>
                   </div>
                 </DialogTrigger>
-                <DialogContent className="max-w-max">
+                <DialogContent className="max-w-max max-h-[90%] overflow-auto">
                   <DialogHeader className="mt-4">
                     <div className="flex justify-between">
                       <DialogTitle>Total Services</DialogTitle>
@@ -261,7 +262,7 @@ const CustomerDashboard = () => {
                             return (
                               <TableHead
                                 key={header.id}
-                                className="text-center lg:text-2xl font-medium"
+                                className="text-center lg:text-xl font-medium"
                               >
                                 {header.isPlaceholder
                                   ? null
@@ -282,7 +283,7 @@ const CustomerDashboard = () => {
                             {row.getVisibleCells().map((cell) => (
                               <TableCell
                                 key={cell.id}
-                                className="text-center lg:text-xl"
+                                className="text-center text-base"
                               >
                                 {flexRender(
                                   cell.column.columnDef.cell,

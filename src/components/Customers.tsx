@@ -79,7 +79,7 @@ export const columns: ColumnDef<ICustomer>[] = [
 ];
 
 const Customers = () => {
-  const limit = 8;
+  const limit = 6;
 
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -123,12 +123,12 @@ const Customers = () => {
   }, [open]);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="lg:w-[30%] h-full flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
-        <div className="w-24 h-24 bg-emerald-100 rounded-full flex justify-center items-center">
-          <BiSolidUser size={32} />
+      <DialogTrigger className="lg:w-[30%] h-[100px] flex gap-4 items-center rounded-md bg-white py-2 px-4 cursor-pointer">
+        <div className="w-16 h-16 bg-emerald-100 rounded-full flex justify-center items-center">
+          <BiSolidUser size={24} />
         </div>
         <div>
-          <p className="text-5xl font-medium text-left">
+          <p className="text-4xl font-medium text-left">
             {customerData?.totalCustomers}
           </p>
           <p className="text-gray-500 text-sm">{"Total Active Customers"}</p>
@@ -155,7 +155,7 @@ const Customers = () => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-center lg:text-2xl font-medium"
+                      className="text-center lg:text-xl font-medium"
                     >
                       {header.isPlaceholder
                         ? null
@@ -174,7 +174,7 @@ const Customers = () => {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-center lg:text-xl">
+                    <TableCell key={cell.id} className="text-center lg:text-base">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

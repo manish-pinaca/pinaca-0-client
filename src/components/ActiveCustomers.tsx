@@ -23,8 +23,8 @@ const ActiveCustomers = () => {
     dispatch(fetchCustomerData({ page, limit }));
   }, [dispatch, page]);
   return (
-    <div className="w-[70%] h-full overflow-auto bg-white px-8 py-4 rounded-sm flex flex-col gap-4">
-      <div className="flex flex-col gap-4">
+    <div className="w-[70%] overflow-auto bg-white px-8 py-4 rounded-sm flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <p className="text-xl font-medium">Active Customer</p>
           <PaginatedItem

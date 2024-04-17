@@ -37,7 +37,7 @@ const CustomerReport = () => {
       });
   }, [customerId, serviceId]);
   return (
-    <div className="w-[25%] bg-white p-8 rounded-sm flex flex-col gap-4">
+    <div className="w-[28%] bg-white p-8 rounded-sm flex flex-col gap-4">
       <p className="text-xl font-medium">Generate Report</p>
       <hr className="border border-gray-200" />
       <div className="flex flex-col justify-between gap-3 h-full">

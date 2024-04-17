@@ -130,11 +130,11 @@ const ActiveCustomer = ({ customer }: { customer: ICustomer }) => {
     <Dialog>
       <DialogTrigger>
         <div
-          className="rounded-md border border-gray-500 p-2 text-left"
+          className="rounded-md border border-gray-500 py-1 px-2 text-left"
           onClick={() => fetchCustomerData(customer._id)}
         >
           <p className="text-xs text-gray-500 leading-none">Customer name</p>
-          <p className="text-md leading-normal font-normal">
+          <p className="text-sm leading-normal font-normal">
             {customer.customerName}
           </p>
         </div>
