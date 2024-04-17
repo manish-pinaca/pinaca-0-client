@@ -223,7 +223,7 @@ const CustomerDashboard = () => {
     <div className="flex bg-indigo-50 h-screen">
       <Sidebar active={active} setActive={setActive} />
       <div className="w-full">
-        <Navbar />
+        <Navbar setActive={setActive} />
         {active === "history" ? (
           <History />
         ) : active === "settings" ? (
