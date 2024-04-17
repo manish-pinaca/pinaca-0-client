@@ -227,7 +227,7 @@ const Dashboard = () => {
                 label="Total Services"
               />
               <Dialog>
-                <DialogTrigger className="lg:w-[30%] h-[100px] flex gap-4 items-center rounded-md bg-white py-2 px-4 cursor-pointer">
+                <DialogTrigger className="lg:w-[30%] h-[80px] flex gap-4 items-center rounded-md bg-white py-2 px-4 cursor-pointer">
                   <div className="w-16 h-16 bg-emerald-100 rounded-full flex justify-center items-center">
                     <MdOutlineManageHistory size={24} />
                   </div>
