@@ -46,7 +46,7 @@ import Settings from "./Settings";
 import AddCustomer from "./AddCustomer";
 import AddService from "./AddService";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://pinaca-0-server.onrender.com");
 
 const Accept = ({ row }: { row: any }) => {
   const dispatch = useAppDispatch();

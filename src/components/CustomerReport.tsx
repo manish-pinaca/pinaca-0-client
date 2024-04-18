@@ -20,7 +20,7 @@ const CustomerReport = () => {
 
   const downloadReport = useCallback(() => {
     axios({
-      url: `http://localhost:5000/api/reports/download/${customerId}/${serviceId}`,
+      url: `https://pinaca-0-server.onrender.com/api/reports/download/${customerId}/${serviceId}`,
       method: "GET",
       responseType: "blob",
     })

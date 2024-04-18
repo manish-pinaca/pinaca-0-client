@@ -41,7 +41,7 @@ const ActiveService = ({ activeServiceId }: { activeServiceId: string }) => {
   useEffect(() => {
     const fetchService = async () => {
       const { data } = await axios.get(
-        `http://localhost:5000/api/services/get/${activeServiceId}`
+        `https://pinaca-0-server.onrender.com/api/services/get/${activeServiceId}`
       );
       setService(data);
     };
@@ -129,7 +129,7 @@ const Customers = () => {
   const fetchCustomerData = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/customer/get/all?page=${page}&limit=${limit}`
+        `https://pinaca-0-server.onrender.com/api/customer/get/all?page=${page}&limit=${limit}`
       );
       console.log(data, "data");
       setTotalCustomers(data.totalCustomers);
@@ -155,9 +155,7 @@ const Customers = () => {
           <BiSolidUser size={24} />
         </div>
         <div>
-          <p className="text-4xl font-medium text-left">
-            {totalCustomers}
-          </p>
+          <p className="text-4xl font-medium text-left">{totalCustomers}</p>
           <p className="text-gray-500 text-sm">{"Total Active Customers"}</p>
         </div>
       </DialogTrigger>

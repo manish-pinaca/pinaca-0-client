@@ -20,7 +20,7 @@ const Report = () => {
 
   const downloadReport = useCallback(() => {
     axios({
-      url: `http://localhost:5000/api/reports/download/${customerId}/${serviceId}`,
+      url: `https://pinaca-0-server.onrender.com/api/reports/download/${customerId}/${serviceId}`,
       method: "GET",
       responseType: "blob",
     })
@@ -45,7 +45,7 @@ const Report = () => {
   const fetchCustomers = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/customer/get/all"
+        "https://pinaca-0-server.onrender.com/api/customer/get/all"
       );
       setCustomers(data.customers);
     } catch (error) {
@@ -56,7 +56,7 @@ const Report = () => {
   const fetchServices = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/services/get/all"
+        "https://pinaca-0-server.onrender.com/api/services/get/all"
       );
       setServices(data.services);
     } catch (error) {

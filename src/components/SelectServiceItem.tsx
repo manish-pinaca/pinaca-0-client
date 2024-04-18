@@ -13,7 +13,7 @@ const SelectServiceItem = ({ serviceId }: { serviceId: string }) => {
   useEffect(() => {
     const fetchService = async () => {
       const { data } = await axios.get(
-        `http://localhost:5000/api/services/get/${serviceId}`
+        `https://pinaca-0-server.onrender.com/api/services/get/${serviceId}`
       );
       setService(data);
     };

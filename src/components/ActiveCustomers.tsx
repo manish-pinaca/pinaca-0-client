@@ -39,7 +39,7 @@ const ActiveService = ({ activeServiceId }: { activeServiceId: string }) => {
   useEffect(() => {
     const fetchService = async () => {
       const { data } = await axios.get(
-        `http://localhost:5000/api/services/get/${activeServiceId}`
+        `https://pinaca-0-server.onrender.com/api/services/get/${activeServiceId}`
       );
       setService(data);
     };
@@ -113,12 +113,12 @@ const ActiveCustomers = () => {
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     setCurrentPageData(customers.slice(startIndex, endIndex));
-  }, [page, customers])
+  }, [page, customers]);
 
   const fetchCustomers = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/customer/get/all/activeCustomers"
+        "https://pinaca-0-server.onrender.com/api/customer/get/all/activeCustomers"
       );
 
       setCustomers(data.customers);

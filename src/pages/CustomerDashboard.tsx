@@ -47,7 +47,7 @@ import CustomerReport from "@/components/CustomerReport";
 import History from "./History";
 import Settings from "./Settings";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://pinaca-0-server.onrender.com");
 
 const Status = ({ row }: { row: any }) => {
   const activeServices = useAppSelector(
