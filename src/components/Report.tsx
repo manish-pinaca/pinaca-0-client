@@ -20,7 +20,7 @@ const Report = () => {
 
   const downloadReport = useCallback(() => {
     axios({
-      url: `https://pinaca-0-server.onrender.com/api/reports/download/${customerId}/${serviceId}`,
+      url: `http://localhost:5000/api/reports/download/${customerId}/${serviceId}`,
       method: "GET",
       responseType: "blob",
     })
@@ -45,7 +45,7 @@ const Report = () => {
   const fetchCustomers = async () => {
     try {
       const { data } = await axios.get(
-        "https://pinaca-0-server.onrender.com/api/customer/get/all"
+        "http://localhost:5000/api/customer/get/all"
       );
       setCustomers(data.customers);
     } catch (error) {
@@ -56,7 +56,7 @@ const Report = () => {
   const fetchServices = async () => {
     try {
       const { data } = await axios.get(
-        "https://pinaca-0-server.onrender.com/api/services/get/all"
+        "http://localhost:5000/api/services/get/all"
       );
       setServices(data.services);
     } catch (error) {
@@ -84,7 +84,11 @@ const Report = () => {
               {customers.length > 0 &&
                 customers.map((customer: ICustomer) => {
                   return (
-                    <SelectItem key={customer._id} value={customer._id} className="text-xs">
+                    <SelectItem
+                      key={customer._id}
+                      value={customer._id}
+                      className="text-xs"
+                    >
                       {customer.customerName}
                     </SelectItem>
                   );
@@ -98,7 +102,11 @@ const Report = () => {
             <SelectContent className="h-[300px]">
               {services.length > 0 &&
                 services.map((service: IService) => (
-                  <SelectItem key={service._id} value={service._id} className="text-xs">
+                  <SelectItem
+                    key={service._id}
+                    value={service._id}
+                    className="text-xs"
+                  >
                     {service.service}
                   </SelectItem>
                 ))}

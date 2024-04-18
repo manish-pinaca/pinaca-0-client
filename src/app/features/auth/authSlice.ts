@@ -61,7 +61,7 @@ export const register = createAsyncThunk(
   async (payload: RegisterParams) => {
     try {
       const { data } = await axios.post(
-        "https://pinaca-0-server.onrender.com/api/signup",
+        "http://localhost:5000/api/signup",
         payload
       );
 
@@ -79,7 +79,7 @@ export const login = createAsyncThunk(
   async (payload: LoginParams) => {
     try {
       const { data } = await axios.post(
-        "https://pinaca-0-server.onrender.com/api/login",
+        "http://localhost:5000/api/login",
         payload
       );
 
@@ -97,7 +97,7 @@ export const fetchCustomer = createAsyncThunk(
   async (customerId: string) => {
     try {
       const { data } = await axios(
-        `https://pinaca-0-server.onrender.com/api/customer/${customerId}`
+        `http://localhost:5000/api/customer/${customerId}`
       );
       return data;
     } catch (error: any) {
@@ -114,7 +114,7 @@ export const fetchAdmin = createAsyncThunk(
     console.log("🚀 ~ file: authSlice.ts:111 ~ adminId:", adminId);
     try {
       const { data } = await axios(
-        `https://pinaca-0-server.onrender.com/api/admin/${adminId}`
+        `http://localhost:5000/api/admin/${adminId}`
       );
       return data;
     } catch (error: any) {

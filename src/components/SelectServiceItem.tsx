@@ -13,14 +13,18 @@ const SelectServiceItem = ({ serviceId }: { serviceId: string }) => {
   useEffect(() => {
     const fetchService = async () => {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/get/${serviceId}`
+        `http://localhost:5000/api/services/get/${serviceId}`
       );
       setService(data);
     };
 
     fetchService();
   }, [serviceId]);
-  return <SelectItem value={serviceId} key={serviceId} className="text-sm">{service?.service}</SelectItem>;
+  return (
+    <SelectItem value={serviceId} key={serviceId} className="text-sm">
+      {service?.service}
+    </SelectItem>
+  );
 };
 
 export default SelectServiceItem;

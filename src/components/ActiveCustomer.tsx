@@ -39,7 +39,7 @@ const ServiceNameCol = ({ serviceId }: { serviceId: string }) => {
   useEffect(() => {
     const fetchService = async () => {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/get/${serviceId}`
+        `http://localhost:5000/api/services/get/${serviceId}`
       );
       setService(data);
     };
@@ -55,7 +55,7 @@ const DownloadReport = ({ serviceId }: { serviceId: string }) => {
   const downloadReport = useCallback(
     (customerId: string, serviceId: string) => {
       axios({
-        url: `https://pinaca-0-server.onrender.com/api/reports/download/${customerId}/${serviceId}`,
+        url: `http://localhost:5000/api/reports/download/${customerId}/${serviceId}`,
         method: "GET",
         responseType: "blob",
       })

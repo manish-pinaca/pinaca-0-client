@@ -28,6 +28,7 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import { ICustomer } from "@/app/features/customers/customerSlice";
+import { Badge } from "./ui/badge";
 
 interface Service {
   _id: string;
@@ -40,7 +41,7 @@ const ActiveService = ({ activeServiceId }: { activeServiceId: string }) => {
   useEffect(() => {
     const fetchService = async () => {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/get/${activeServiceId}`
+        `http://localhost:5000/api/services/get/${activeServiceId}`
       );
       setService(data);
     };
@@ -71,10 +72,34 @@ export const columns: ColumnDef<ICustomer>[] = [
   },
   {
     accessorKey: "activeServices",
-    header: "Active Services",
+    header: "Service Opted",
     cell: ({ row }) => {
       return <ActiveServices activeServices={row.original.activeServices} />;
     },
+  },
+  {
+    accessorKey: "startDate",
+    header: "Start Date",
+    cell: ({ row }) =>
+      row.original.activeServices.length > 0 ? (
+        row.original.activeServices.map(() => <p>dd/mm/yyyy</p>)
+      ) : (
+        <p>-</p>
+      ),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) =>
+      row.original.activeServices.length > 0 ? (
+        row.original.activeServices.map(() => (
+          <div>
+            <Badge variant={"success"}>Active</Badge>
+          </div>
+        ))
+      ) : (
+        <p>-</p>
+      ),
   },
 ];
 
@@ -84,6 +109,7 @@ const Customers = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [customers, setCustomers] = useState([]);
+  const [totalCustomers, setTotalCustomers] = useState<string>("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const customerData = useAppSelector(
     (state) => state.customerReducer.customerData
@@ -103,9 +129,10 @@ const Customers = () => {
   const fetchCustomerData = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/customer/get/all?page=${page}&limit=${limit}`
+        `http://localhost:5000/api/customer/get/all?page=${page}&limit=${limit}`
       );
-      console.log(data.customers);
+      console.log(data, "data");
+      setTotalCustomers(data.totalCustomers);
       setCustomers(data.customers);
     } catch (error) {
       console.log("Error fetching customer data", error);
@@ -129,7 +156,7 @@ const Customers = () => {
         </div>
         <div>
           <p className="text-4xl font-medium text-left">
-            {customerData?.totalCustomers}
+            {totalCustomers}
           </p>
           <p className="text-gray-500 text-sm">{"Total Active Customers"}</p>
         </div>
@@ -174,7 +201,10 @@ const Customers = () => {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-center lg:text-base">
+                    <TableCell
+                      key={cell.id}
+                      className="text-center lg:text-base"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
