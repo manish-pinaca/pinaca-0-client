@@ -81,6 +81,9 @@ const Report = () => {
               <SelectValue placeholder="Select Customer" />
             </SelectTrigger>
             <SelectContent className="h-[300px]">
+              <SelectItem key={"all"} value="all" className="text-xs">
+                All customers
+              </SelectItem>
               {customers.length > 0 &&
                 customers.map((customer: ICustomer) => {
                   return (
@@ -100,6 +103,9 @@ const Report = () => {
               <SelectValue placeholder="Select Service" />
             </SelectTrigger>
             <SelectContent className="h-[300px]">
+              <SelectItem key={"all"} value="all" className="text-xs">
+                All services
+              </SelectItem>
               {services.length > 0 &&
                 services.map((service: IService) => (
                   <SelectItem
