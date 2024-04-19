@@ -9,16 +9,20 @@ import SelectServiceItem from "./SelectServiceItem";
 import { Button } from "./ui/button";
 import { useCallback, useState } from "react";
 import axios from "axios";
+import LoadingButton from "./LoadingButton";
 
 const CustomerReport = () => {
+
   const activeServices = useAppSelector(
     (state) => state.authReducer.customer.activeServices
   );
   const [serviceId, setServiceId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const customerId = useAppSelector((state) => state.authReducer.customer._id);
 
   const downloadReport = useCallback(() => {
+    setIsLoading(true);
     axios({
       url: `https://pinaca-0-server.onrender.com/api/reports/download/${customerId}/${serviceId}`,
       method: "GET",
@@ -31,9 +35,11 @@ const CustomerReport = () => {
         a.href = fileURL;
         a.download = "report.pdf";
         a.click();
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error downloading PDF:", error);
+        setIsLoading(false);
       });
   }, [customerId, serviceId]);
   return (
@@ -55,9 +61,18 @@ const CustomerReport = () => {
             )}
           </SelectContent>
         </Select>
-        <Button className="w-full" variant={"primary"} onClick={downloadReport}>
-          Generate Report
-        </Button>
+        {isLoading ? (
+          <LoadingButton />
+        ) : (
+          <Button
+            className="w-full"
+            variant={"primary"}
+            onClick={downloadReport}
+            disabled={isLoading}
+          >
+            Generate Report
+          </Button>
+        )}
       </div>
     </div>
   );
