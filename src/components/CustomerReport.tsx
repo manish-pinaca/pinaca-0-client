@@ -12,7 +12,6 @@ import axios from "axios";
 import LoadingButton from "./LoadingButton";
 
 const CustomerReport = () => {
-
   const activeServices = useAppSelector(
     (state) => state.authReducer.customer.activeServices
   );

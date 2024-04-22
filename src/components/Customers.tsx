@@ -1,5 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useAppSelector } from "@/app/hooks";
 import { BiSolidUser } from "react-icons/bi";
 import {
   Dialog,
@@ -109,11 +108,8 @@ const Customers = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [customers, setCustomers] = useState([]);
-  const [totalCustomers, setTotalCustomers] = useState<string>("");
+  const [totalCustomers, setTotalCustomers] = useState<number>(0);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const customerData = useAppSelector(
-    (state) => state.customerReducer.customerData
-  );
 
   const table = useReactTable({
     data: customers,
@@ -166,9 +162,7 @@ const Customers = () => {
             <PaginatedItem
               setPage={setPage}
               limit={limit}
-              totalItems={
-                customerData?.totalCustomers ? customerData.totalCustomers : 0
-              }
+              totalItems={totalCustomers}
             />
           </div>
         </DialogHeader>

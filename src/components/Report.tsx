@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 
 import { ICustomer } from "@/app/features/customers/customerSlice";
@@ -11,41 +12,42 @@ import {
 } from "@/components/ui/select";
 import { Button } from "./ui/button";
 import { useCallback, useEffect, useState } from "react";
-import LoadingButton from "./LoadingButton";
+import { Dialog, DialogContent } from "./ui/dialog";
+import DownloadReport from "./DownloadReport";
+
+export interface IReports {
+  customerId: string;
+  serviceId: string;
+  activateDate: string;
+}
 
 const Report = () => {
+  const [open, setOpen] = useState<boolean>(false);
   const [customers, setCustomers] = useState<ICustomer[]>([]);
   const [services, setServices] = useState<IService[]>([]);
   const [customerId, setCustomerId] = useState<string>("");
   const [serviceId, setServiceId] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [reports, setReports] = useState<IReports[]>([]);
 
-  const downloadReport = useCallback(() => {
-    setLoading(true);
-    axios({
-      url: `https://pinaca-0-server.onrender.com/api/reports/download/${customerId}/${serviceId}`,
-      method: "GET",
-      responseType: "blob",
-    })
-      .then((response) => {
-        const file = new Blob([response.data], { type: "application/pdf" });
-        const fileURL = URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = fileURL;
-        a.download = "report.pdf";
-        a.click();
-        setLoading(false);
-      })
-      .catch((error) => {
-        alert(
-          error?.response?.status === 400
-            ? "Service is not activated"
-            : error.message
-        );
-        console.error("Error downloading PDF:", error);
-        setLoading(false);
-      });
-  }, [customerId, serviceId]);
+  const fetchReports = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        `https://pinaca-0-server.onrender.com/api/reports/get/${customerId}/${serviceId}`
+      );
+      setReports(data);
+      setOpen(true);
+    } catch (error: any) {
+      alert(error?.response?.data?.message);
+    }
+  }, [customerId, serviceId, setOpen]);
+
+  const openModal = useCallback(() => {
+    if (customerId && serviceId) fetchReports();
+    else {
+      alert("Please select a customer and service");
+      return;
+    }
+  }, [customerId, serviceId, fetchReports]);
 
   const fetchCustomers = async () => {
     try {
@@ -125,18 +127,14 @@ const Report = () => {
           </Select>
         </div>
         <div>
-          {loading ? (
-            <LoadingButton />
-          ) : (
-            <Button
-              className="w-full"
-              variant={"primary"}
-              onClick={downloadReport}
-              disabled={loading}
-            >
-              Generate Report
-            </Button>
-          )}
+          <Button className="w-full" variant={"primary"} onClick={openModal}>
+            Generate Report
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="max-w-max max-h-[90vh] overflow-auto">
+              <DownloadReport reports={reports} setOpen={setOpen} />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

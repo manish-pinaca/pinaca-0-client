@@ -104,11 +104,6 @@ const ActiveCustomers = () => {
   const [currentPageData, setCurrentPageData] = useState<ICustomer[]>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  // const startIndex = (page - 1) * limit;
-  // const endIndex = startIndex + limit;
-
-  // const currentPageData = customers.slice(startIndex, endIndex);
-
   useEffect(() => {
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
