@@ -1,8 +1,9 @@
 import { CiSettings } from "react-icons/ci";
 import { GrServices } from "react-icons/gr";
-import { BiHistory } from "react-icons/bi";
+import { MdOutlineFeedback } from "react-icons/md";
 
 import logo from "../assets/logo.jpeg";
+import { useAppSelector } from "@/app/hooks";
 
 interface SidebarProps {
   active: string;
@@ -10,6 +11,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ active, setActive }: SidebarProps) => {
+  const userRole = useAppSelector((state) => state.authReducer.role);
+
   return (
     <div className="h-screen w-1/6 bg-white overflow-hidden">
       <div className="flex justify-center items-center h-[20%]">
@@ -18,7 +21,7 @@ const Sidebar = ({ active, setActive }: SidebarProps) => {
       <div className="flex flex-col justify-center items-center h-[70%] w-full">
         <div
           onClick={() => setActive("overview")}
-          className={`flex gap-4 justify-center text-xl cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${
+          className={`flex gap-4 justify-center items-center text-xl cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${
             active === "overview" ? "bg-slate-700 text-white" : ""
           }`}
         >
@@ -26,23 +29,25 @@ const Sidebar = ({ active, setActive }: SidebarProps) => {
         </div>
         <div
           onClick={() => setActive("services")}
-          className={`flex gap-4 justify-center text-xl cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${
+          className={`flex gap-4 justify-center items-center text-xl cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${
             active === "services" ? "bg-slate-700 text-white" : ""
           }`}
         >
           <GrServices /> Services
         </div>
-        <div
-          onClick={() => setActive("history")}
-          className={`flex gap-4 justify-center text-xl cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${
-            active === "history" ? "bg-slate-700 text-white" : ""
-          }`}
-        >
-          <BiHistory /> History
-        </div>
+        {userRole === "admin" ? (
+          <div
+            onClick={() => setActive("feedback")}
+            className={`flex gap-4 justify-center text-xl items-center cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${
+              active === "feedback" ? "bg-slate-700 text-white" : ""
+            }`}
+          >
+            <MdOutlineFeedback /> Feedback
+          </div>
+        ) : null}
         <div
           onClick={() => setActive("settings")}
-          className={`flex gap-4 justify-center text-xl cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${
+          className={`flex gap-4 justify-center items-center text-xl cursor-pointer hover:bg-slate-700 p-4 w-full hover:text-white ${
             active === "settings" ? "bg-slate-700 text-white" : ""
           }`}
         >

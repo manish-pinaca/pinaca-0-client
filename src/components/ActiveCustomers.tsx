@@ -19,46 +19,16 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-
-interface Service {
-  _id: string;
-  service: string;
-}
+import { IActiveService } from "@/app/features/customers/customerSlice";
+import moment from "moment";
 
 interface ICustomer {
   _id: string;
   customerName: string;
   userEmail: string;
   adminId: string;
-  activeService: string;
+  activeService: IActiveService;
 }
-
-const ActiveService = ({ activeServiceId }: { activeServiceId: string }) => {
-  const [service, setService] = useState<Service>();
-
-  useEffect(() => {
-    const fetchService = async () => {
-      const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/get/${activeServiceId}`
-      );
-      setService(data);
-    };
-
-    fetchService();
-  }, [activeServiceId]);
-
-  return <p>{service?.service}</p>;
-};
-
-// const ActiveServices = ({ activeServices }: { activeServices: string[] }) => {
-//   return activeServices.length > 0 ? (
-//     activeServices.map((activeService) => (
-//       <ActiveService key={activeService} activeServiceId={activeService} />
-//     ))
-//   ) : (
-//     <p>-</p>
-//   );
-// };
 
 export const columns: ColumnDef<ICustomer>[] = [
   {
@@ -73,7 +43,7 @@ export const columns: ColumnDef<ICustomer>[] = [
     header: "Service Opted",
     cell: ({ row }) => {
       return row.original.activeService ? (
-        <ActiveService activeServiceId={row.original.activeService} />
+        <p>{row.original.activeService.serviceName}</p>
       ) : (
         <p>-</p>
       );
@@ -83,7 +53,17 @@ export const columns: ColumnDef<ICustomer>[] = [
     accessorKey: "startDate",
     header: "Start Date",
     cell: ({ row }) =>
-      row.original.activeService ? <p>dd/mm/yyyy</p> : <p>-</p>,
+      row.original.activeService ? (
+        <p>
+          {moment(
+            row.original.activeService.activateOn !== "DD/MM/YYYY"
+              ? row.original.activeService.activateOn
+              : "01/01/2022"
+          ).format("l")}
+        </p>
+      ) : (
+        <p>-</p>
+      ),
   },
   {
     accessorKey: "status",
@@ -140,7 +120,7 @@ const ActiveCustomers = () => {
     <div className="w-[70%] overflow-auto bg-white px-8 py-4 rounded-sm flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <p className="text-xl font-medium">Active Customer</p>
+          <p className="text-xl font-medium">Customers</p>
           <PaginatedItem
             setPage={setPage}
             totalItems={customers.length}

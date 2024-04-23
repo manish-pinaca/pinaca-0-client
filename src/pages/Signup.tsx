@@ -113,7 +113,6 @@ const Signup = () => {
               <Input
                 type="text"
                 id="email"
-                placeholder="User Name"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
               />
@@ -128,8 +127,8 @@ const Signup = () => {
               <Input
                 type="email"
                 id="email"
-                placeholder="example@email.com"
                 value={email}
+                autoComplete="off"
                 onChange={(e) => setEmail(e.target.value)}
               />
               {errors.email && (
@@ -144,8 +143,8 @@ const Signup = () => {
                 <Input
                   type={passwordType}
                   id="email"
-                  placeholder="userid1234"
                   value={password}
+                  autoComplete="off"
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 {passwordType === "password" ? (

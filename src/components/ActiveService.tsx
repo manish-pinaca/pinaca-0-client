@@ -20,12 +20,7 @@ const ActiveService = ({ activeServiceId }: { activeServiceId: string }) => {
 
     fetchService();
   }, [activeServiceId]);
-  return (
-    <div className="rounded-md border border-gray-500 p-2">
-      <p className="text-xs text-gray-500 leading-none">Service name</p>
-      <p className="text-base leading-normal font-normal">{service?.service}</p>
-    </div>
-  );
+  return <p>{service?.service}</p>;
 };
 
 export default ActiveService;

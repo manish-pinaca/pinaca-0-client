@@ -18,7 +18,9 @@ import DownloadReport from "./DownloadReport";
 export interface IReports {
   customerId: string;
   serviceId: string;
-  activateDate: string;
+  customerName: string;
+  serviceName: string;
+  activateOn: string;
 }
 
 const Report = () => {
@@ -32,7 +34,7 @@ const Report = () => {
   const fetchReports = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/reports/get/${customerId}/${serviceId}`
+        `https://pinaca-0-server.onrender.com/api/auth/reports/get/${customerId}/${serviceId}`
       );
       setReports(data);
       setOpen(true);

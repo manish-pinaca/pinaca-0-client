@@ -2,14 +2,32 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+export interface IActiveService {
+  serviceId: string;
+  serviceName: string;
+  activateOn: string;
+}
+
+export interface IPendingService {
+  serviceId: string;
+  serviceName: string;
+  requestedOn: string;
+}
+
+export interface IRejectedService {
+  serviceId: string;
+  serviceName: string;
+  rejectedOn: string;
+}
+
 export interface ICustomer {
   _id: string;
   customerName: string;
   adminId: string;
   userEmail: string;
-  activeServices: string[];
-  pendingServices: string[];
-  rejectedServices: string[];
+  activeServices: IActiveService[];
+  pendingServices: IPendingService[];
+  rejectedServices: IRejectedService[];
 }
 
 export interface IInitialState {

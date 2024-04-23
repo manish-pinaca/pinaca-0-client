@@ -1,15 +1,16 @@
 import { useAppSelector } from "@/app/hooks";
 import {
   Select,
+  SelectItem,
   SelectTrigger,
   SelectValue,
   SelectContent,
 } from "@/components/ui/select";
-import SelectServiceItem from "./SelectServiceItem";
 import { Button } from "./ui/button";
 import { useCallback, useState } from "react";
 import axios from "axios";
 import LoadingButton from "./LoadingButton";
+import { IActiveService } from "@/app/features/customers/customerSlice";
 
 const CustomerReport = () => {
   const activeServices = useAppSelector(
@@ -23,7 +24,7 @@ const CustomerReport = () => {
   const downloadReport = useCallback(() => {
     setIsLoading(true);
     axios({
-      url: `https://pinaca-0-server.onrender.com/api/reports/download/${customerId}/${serviceId}`,
+      url: `https://pinaca-0-server.onrender.com/api/auth/reports/download/${customerId}/${serviceId}`,
       method: "GET",
       responseType: "blob",
     })
@@ -52,8 +53,10 @@ const CustomerReport = () => {
           </SelectTrigger>
           <SelectContent>
             {activeServices && activeServices?.length > 0 ? (
-              activeServices.map((service: string, index: number) => (
-                <SelectServiceItem key={index} serviceId={service} />
+              activeServices.map((service: IActiveService) => (
+                <SelectItem key={service.serviceId} value={service.serviceId}>
+                  {service.serviceName}
+                </SelectItem>
               ))
             ) : (
               <p>You don't have any active service.</p>

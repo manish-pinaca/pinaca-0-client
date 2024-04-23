@@ -10,10 +10,11 @@ import { useAppSelector } from "@/app/hooks";
 import ActionMenu from "./ActionMenu";
 
 interface INavbarProps {
-  setActive: React.Dispatch<React.SetStateAction<string>>;
+  setOpenAddCustomerModal?: (open: boolean) => void;
+  setOpenAddServiceModal?: (open: boolean) => void;
 }
 
-const Navbar = ({ setActive }: INavbarProps) => {
+const Navbar = ({ setOpenAddCustomerModal, setOpenAddServiceModal }: INavbarProps) => {
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
   const [showActionMenu, setShowActionMenu] = useState<boolean>(false);
   const userRole = useAppSelector((state) => state.authReducer.role);
@@ -46,7 +47,7 @@ const Navbar = ({ setActive }: INavbarProps) => {
                 showActionMenu ? "rotate-45" : "rotate-0"
               }`}
             />
-            <ActionMenu visible={showActionMenu} setActive={setActive} />
+            <ActionMenu visible={showActionMenu} setOpenAddCustomerModal={setOpenAddCustomerModal!} setOpenAddServiceModal={setOpenAddServiceModal!} />
           </div>
         ) : null}
         <div>

@@ -26,35 +26,32 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import axios from "axios";
-import { ICustomer } from "@/app/features/customers/customerSlice";
+import {
+  IActiveService,
+  ICustomer,
+} from "@/app/features/customers/customerSlice";
 import { Badge } from "./ui/badge";
+import moment from "moment";
 
-interface Service {
-  _id: string;
-  service: string;
-}
-
-const ActiveService = ({ activeServiceId }: { activeServiceId: string }) => {
-  const [service, setService] = useState<Service>();
-
-  useEffect(() => {
-    const fetchService = async () => {
-      const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/get/${activeServiceId}`
-      );
-      setService(data);
-    };
-
-    fetchService();
-  }, [activeServiceId]);
-
-  return <p>{service?.service}</p>;
+const ActiveService = ({
+  activeService,
+}: {
+  activeService: IActiveService;
+}) => {
+  return <p>{activeService.serviceName}</p>;
 };
 
-const ActiveServices = ({ activeServices }: { activeServices: string[] }) => {
+const ActiveServices = ({
+  activeServices,
+}: {
+  activeServices: IActiveService[];
+}) => {
   return activeServices.length > 0 ? (
-    activeServices.map((activeService) => (
-      <ActiveService key={activeService} activeServiceId={activeService} />
+    activeServices.map((activeService: IActiveService) => (
+      <ActiveService
+        key={activeService.serviceId}
+        activeService={activeService}
+      />
     ))
   ) : (
     <p>-</p>
@@ -77,11 +74,19 @@ export const columns: ColumnDef<ICustomer>[] = [
     },
   },
   {
-    accessorKey: "startDate",
-    header: "Start Date",
+    accessorKey: "activateOn",
+    header: "Incorporation Date",
     cell: ({ row }) =>
       row.original.activeServices.length > 0 ? (
-        row.original.activeServices.map(() => <p>dd/mm/yyyy</p>)
+        row.original.activeServices.map((activeService: IActiveService) => (
+          <p>
+            {moment(
+              activeService.activateOn !== "DD/MM/YYYY"
+                ? activeService.activateOn
+                : "01/01/2022"
+            ).format("l")}
+          </p>
+        ))
       ) : (
         <p>-</p>
       ),
@@ -127,7 +132,6 @@ const Customers = () => {
       const { data } = await axios.get(
         `https://pinaca-0-server.onrender.com/api/customer/get/all?page=${page}&limit=${limit}`
       );
-      console.log(data, "data");
       setTotalCustomers(data.totalCustomers);
       setCustomers(data.customers);
     } catch (error) {
@@ -152,13 +156,13 @@ const Customers = () => {
         </div>
         <div>
           <p className="text-4xl font-medium text-left">{totalCustomers}</p>
-          <p className="text-gray-500 text-sm">{"Total Active Customers"}</p>
+          <p className="text-gray-500 text-sm">{"Total Customers"}</p>
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-max max-h-[90vh] overflow-auto">
         <DialogHeader className="mt-4">
           <div className="flex justify-between">
-            <DialogTitle>Active Customers</DialogTitle>
+            <DialogTitle>Customers</DialogTitle>
             <PaginatedItem
               setPage={setPage}
               limit={limit}

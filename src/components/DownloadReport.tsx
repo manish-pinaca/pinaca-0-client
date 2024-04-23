@@ -23,6 +23,7 @@ import { DialogHeader, DialogTitle } from "./ui/dialog";
 import PaginatedItem from "./PaginatedItem";
 import LoadingButton from "./LoadingButton";
 import { IReports } from "./Report";
+import moment from "moment";
 
 interface IDownloadReportProps {
   reports: IReports[];
@@ -33,57 +34,21 @@ interface ICurrentPageData extends IReports {
   setOpen: (open: boolean) => void;
 }
 
-const CustomerName = ({ customerId }: { customerId: string }) => {
-  const [customerName, setCustomerName] = useState<string>("");
-
-  const fetchCustomerName = useCallback(async () => {
-    try {
-      const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/customer/getCustomerName/${customerId}`
-      );
-      setCustomerName(data.customerName);
-    } catch (error) {
-      console.log("Error fetching customer", error);
-    }
-  }, [customerId]);
-
-  useEffect(() => {
-    fetchCustomerName();
-  }, [fetchCustomerName]);
-  return <p>{customerName}</p>;
-};
-
-const ServiceName = ({ serviceId }: { serviceId: string }) => {
-  const [serviceName, setServiceName] = useState<string>("");
-
-  const fetchServiceName = useCallback(async () => {
-    try {
-      const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/get/${serviceId}`
-      );
-      setServiceName(data.service);
-    } catch (error) {
-      console.log("Error fetching service", error);
-    }
-  }, [serviceId]);
-
-  useEffect(() => {
-    fetchServiceName();
-  }, [fetchServiceName]);
-
-  return <p>{serviceName}</p>;
-};
-
 const DownloadReportButton = ({
   customerId,
   serviceId,
   setOpen,
-}: ICurrentPageData) => {
+}: {
+  customerId: string;
+  serviceId: string;
+  setOpen: (open: boolean) => void;
+}) => {
   const [loading, setLoading] = useState<boolean>(false);
+  console.log("customerId:", customerId, "serviceId:", serviceId);
 
   const downloadReport = useCallback(() => {
     axios({
-      url: `https://pinaca-0-server.onrender.com/api/reports/download/${customerId}/${serviceId}`,
+      url: `https://pinaca-0-server.onrender.com/api/auth/reports/download/${customerId}/${serviceId}`,
       method: "GET",
       responseType: "blob",
     })
@@ -120,19 +85,27 @@ const DownloadReportButton = ({
 
 export const columns: ColumnDef<ICurrentPageData>[] = [
   {
-    accessorKey: "customerId",
+    accessorKey: "customerName",
     header: "Customer Name",
-    cell: ({ row }) => <CustomerName customerId={row.original.customerId} />,
+    cell: ({ row }) => <p>{row.getValue("customerName")}</p>,
   },
   {
-    accessorKey: "serviceId",
+    accessorKey: "serviceName",
     header: "Service Opted",
-    cell: ({ row }) => <ServiceName serviceId={row.original.serviceId} />,
+    cell: ({ row }) => <p>{row.getValue("serviceName")}</p>,
   },
   {
-    accessorKey: "activateDate",
+    accessorKey: "activateOn",
     header: "Start Date",
-    cell: ({ row }) => <p>{row.original.activateDate}</p>,
+    cell: ({ row }) => (
+      <p>
+        {moment(
+          row.original.activateOn !== "DD/MM/YYYY"
+            ? row.original.activateOn
+            : "01/01/2022"
+        ).format("l")}
+      </p>
+    ),
   },
   {
     accessorKey: "action",
@@ -140,7 +113,6 @@ export const columns: ColumnDef<ICurrentPageData>[] = [
       <DownloadReportButton
         customerId={row.original.customerId}
         serviceId={row.original.serviceId}
-        activateDate={row.original.activateDate}
         setOpen={row.original.setOpen}
       />
     ),
@@ -154,6 +126,7 @@ const DownloadReport = ({ reports, setOpen }: IDownloadReportProps) => {
   const [currentPageData, setCurrentPageData] = useState<ICurrentPageData[]>(
     []
   );
+  console.log("currentPageData", currentPageData);
 
   const table = useReactTable({
     data: currentPageData,

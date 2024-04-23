@@ -109,9 +109,9 @@ const Login = () => {
               <Input
                 type="email"
                 id="email"
-                placeholder="example@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="off"
               />
               {errors.email && (
                 <p className="text-sm italic text-red-500">{errors.email}</p>
@@ -125,9 +125,9 @@ const Login = () => {
                 <Input
                   type={passwordType}
                   id="email"
-                  placeholder="userId@1234"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
                 />
                 {passwordType === "password" ? (
                   <FaEyeSlash

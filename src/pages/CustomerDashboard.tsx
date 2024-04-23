@@ -44,8 +44,14 @@ import { Badge } from "@/components/ui/badge";
 import { fetchCustomer } from "@/app/features/auth/authSlice";
 import { toast } from "@/components/ui/use-toast";
 import CustomerReport from "@/components/CustomerReport";
-import History from "./History";
+import History from "./Feedback";
 import Settings from "./Settings";
+import {
+  IActiveService,
+  IPendingService,
+  IRejectedService,
+} from "@/app/features/customers/customerSlice";
+import moment from "moment";
 
 const socket = io("https://pinaca-0-server.onrender.com");
 
@@ -53,21 +59,85 @@ const Status = ({ row }: { row: any }) => {
   const activeServices = useAppSelector(
     (state) => state.authReducer.customer.activeServices
   );
+
   const pendingServices = useAppSelector(
     (state) => state.authReducer.customer.pendingServices
   );
+
   const rejectedServices = useAppSelector(
     (state) => state.authReducer.customer.rejectedServices
   );
 
   return (
     <>
-      {activeServices.includes(row.original["_id"]) ? (
-        <Badge>Active</Badge>
-      ) : pendingServices.includes(row.original["_id"]) ? (
+      {activeServices.filter(
+        (service: IActiveService) => service.serviceId === row.original["_id"]
+      ).length > 0 ? (
+        <Badge variant={"success"}>Active</Badge>
+      ) : pendingServices.filter(
+          (service: IPendingService) =>
+            service.serviceId === row.original["_id"]
+        ).length > 0 ? (
         <Badge>Pending</Badge>
-      ) : rejectedServices.includes(row.original["_id"]) ? (
+      ) : rejectedServices.filter(
+          (service: IRejectedService) =>
+            service.serviceId === row.original["_id"]
+        ).length > 0 ? (
         <Badge variant={"destructive"}>Rejected</Badge>
+      ) : (
+        "-"
+      )}
+    </>
+  );
+};
+
+const OptedOn = ({ row }: { row: any }) => {
+  const activeServices = useAppSelector(
+    (state) => state.authReducer.customer.activeServices
+  );
+
+  const pendingServices = useAppSelector(
+    (state) => state.authReducer.customer.pendingServices
+  );
+
+  const rejectedServices = useAppSelector(
+    (state) => state.authReducer.customer.rejectedServices
+  );
+
+  return (
+    <>
+      {activeServices.filter(
+        (service: IActiveService) => service.serviceId === row.original["_id"]
+      ).length > 0 ? (
+        <p>
+          {moment(
+            activeServices.filter(
+              (service) => service.serviceId === row.original["_id"]
+            )[0].activateOn
+          ).format("l")}
+        </p>
+      ) : pendingServices.filter(
+          (service: IPendingService) =>
+            service.serviceId === row.original["_id"]
+        ).length > 0 ? (
+        <p>
+          {moment(
+            pendingServices.filter(
+              (service) => service.serviceId === row.original["_id"]
+            )[0].requestedOn
+          ).format("l")}
+        </p>
+      ) : rejectedServices.filter(
+          (service: IRejectedService) =>
+            service.serviceId === row.original["_id"]
+        ).length > 0 ? (
+        <p>
+          {moment(
+            rejectedServices.filter(
+              (service) => service.serviceId === row.original["_id"]
+            )[0].rejectedOn
+          ).format("l")}
+        </p>
       ) : (
         "-"
       )}
@@ -150,12 +220,8 @@ export const columns: ColumnDef<IService>[] = [
   },
   {
     accessorKey: "activateOn",
-    header: "Activate On",
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.getValue("activateOn") ? row.getValue("activateOn") : "-"}
-      </div>
-    ),
+    header: "Opted On",
+    cell: ({ row }) => <OptedOn row={row} />,
   },
   {
     accessorKey: "action",
@@ -223,7 +289,7 @@ const CustomerDashboard = () => {
     <div className="flex bg-indigo-50 h-screen">
       <Sidebar active={active} setActive={setActive} />
       <div className="w-full">
-        <Navbar setActive={setActive} />
+        <Navbar />
         {active === "history" ? (
           <History />
         ) : active === "settings" ? (

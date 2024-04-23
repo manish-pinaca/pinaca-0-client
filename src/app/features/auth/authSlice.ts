@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import {
+  IActiveService,
+  IPendingService,
+  IRejectedService,
+} from "../customers/customerSlice";
 
 enum Role {
   Admin = "admin",
@@ -18,6 +23,7 @@ export interface RequestedServices {
   customerName: string;
   serviceName: string;
   serviceId: string;
+  requestedOn: string;
 }
 
 export interface Admin {
@@ -32,9 +38,9 @@ export interface Customer {
   _id: string;
   customerName: string;
   customerEmail: string;
-  pendingServices: string[];
-  activeServices: string[];
-  rejectedServices: string[];
+  pendingServices: IPendingService[];
+  activeServices: IActiveService[];
+  rejectedServices: IRejectedService[];
   adminId: string;
 }
 
@@ -61,7 +67,7 @@ export const register = createAsyncThunk(
   async (payload: RegisterParams) => {
     try {
       const { data } = await axios.post(
-        "https://pinaca-0-server.onrender.com/api/signup",
+        "https://pinaca-0-server.onrender.com/api/auth/signup",
         payload
       );
 
@@ -79,7 +85,7 @@ export const login = createAsyncThunk(
   async (payload: LoginParams) => {
     try {
       const { data } = await axios.post(
-        "https://pinaca-0-server.onrender.com/api/login",
+        "https://pinaca-0-server.onrender.com/api/auth/login",
         payload
       );
 
@@ -97,7 +103,7 @@ export const fetchCustomer = createAsyncThunk(
   async (customerId: string) => {
     try {
       const { data } = await axios(
-        `https://pinaca-0-server.onrender.com/api/customer/${customerId}`
+        `https://pinaca-0-server.onrender.com/api/auth/customer/${customerId}`
       );
       return data;
     } catch (error: any) {
@@ -111,10 +117,9 @@ export const fetchCustomer = createAsyncThunk(
 export const fetchAdmin = createAsyncThunk(
   "/api/fetchAdminData",
   async (adminId: string) => {
-    console.log("🚀 ~ file: authSlice.ts:111 ~ adminId:", adminId);
     try {
       const { data } = await axios(
-        `https://pinaca-0-server.onrender.com/api/admin/${adminId}`
+        `https://pinaca-0-server.onrender.com/api/auth/admin/${adminId}`
       );
       return data;
     } catch (error: any) {
