@@ -31,11 +31,18 @@ export const columns: ColumnDef<IActiveService>[] = [
   {
     accessorKey: "activateOn",
     header: "Activate On",
-    cell: ({ row }) => <p>{moment(row.getValue("activateOn")).format("l")}</p>,
+    cell: ({ row }) => (
+      <p>{moment(row.getValue("activateOn")).format("DD/MM/YYYY")}</p>
+    ),
   },
   {
     header: "Feedback",
-    cell: ({ row }) => <CustomerServiceFeedback serviceName={row.original.serviceName} serviceId={row.original.serviceId} />,
+    cell: ({ row }) => (
+      <CustomerServiceFeedback
+        serviceName={row.original.serviceName}
+        serviceId={row.original.serviceId}
+      />
+    ),
   },
 ];
 

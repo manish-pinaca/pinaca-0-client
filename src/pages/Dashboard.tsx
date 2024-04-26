@@ -1,18 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from "react";
-import { GrServices } from "react-icons/gr";
 import { MdOutlineManageHistory } from "react-icons/md";
 import { io } from "socket.io-client";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import ActiveCustomers from "@/components/ActiveCustomers";
-import Card from "@/components/Card";
-import Navbar from "@/components/Navbar";
 import Report from "@/components/Report";
 import Sidebar from "@/components/Sidebar";
 import Services from "@/components/Services";
-import { fetchServiceData } from "@/app/features/services/serviceSlice";
+import {
+  IService,
+  fetchServiceData,
+} from "@/app/features/services/serviceSlice";
 import {
   RequestedServices,
   fetchAdmin,
@@ -53,6 +53,25 @@ import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/LoadingButton";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
+import TotalServices from "@/components/TotalServices";
+import AdminNavbar from "@/components/AdminNavbar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { ICustomer } from "@/app/features/customers/customerSlice";
 
 const socket = io("https://pinaca-0-server.onrender.com");
 
@@ -143,7 +162,7 @@ export const columns: ColumnDef<RequestedServices>[] = [
     cell: ({ row }) => (
       <div className="capitalize">
         {row.getValue("requestedOn")
-          ? moment(row.getValue("requestedOn")).format("l")
+          ? moment(row.getValue("requestedOn")).format("DD/MM/YYYY")
           : "-"}
       </div>
     ),
@@ -180,12 +199,16 @@ const Dashboard = () => {
   const [customerName, setCustomerName] = useState<string>("");
   const [customerEmail, setCustomerEmail] = useState<string>("");
   const [customerPassword, setCustomerPassword] = useState<string>("");
+  const [openUploadReportModel, setOpenUploadReportModel] =
+    useState<boolean>(false);
+  const [date, setDate] = useState<Date | undefined>();
+  const [customers, setCustomers] = useState<ICustomer[]>([]);
+  const [services, setServices] = useState<IService[]>([]);
+  const [customerId, setCustomerId] = useState<string>("");
+  const [serviceId, setServiceId] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const adminId = useAppSelector((state) => state.authReducer.admin._id);
-
-  const totalServices = useAppSelector(
-    (state) => state.serviceReducer.serviceData?.totalServices
-  );
 
   const requestedServices = useAppSelector(
     (state) => state.authReducer.admin.requestedServices
@@ -232,8 +255,9 @@ const Dashboard = () => {
       setIsLoading(true);
       const { data } = await axios.post(
         "https://pinaca-0-server.onrender.com/api/services/add",
-        { service: serviceName }
+        { service: serviceName, adminId }
       );
+      socket.emit("addService");
       toast({
         variant: "default",
         title: "Service added!",
@@ -251,15 +275,124 @@ const Dashboard = () => {
       setServiceName("");
       dispatch(fetchServiceData({ page: 1, limit: 8 }));
     }
-  }, [serviceName, dispatch]);
+  }, [serviceName, dispatch, adminId]);
+
+  const fetchCustomers = async () => {
+    try {
+      const { data } = await axios.get(
+        "https://pinaca-0-server.onrender.com/api/customer/get/all"
+      );
+      setCustomers(data.customers);
+    } catch (error) {
+      console.log("Error fetching customers", error);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const { data } = await axios.get(
+        "https://pinaca-0-server.onrender.com/api/services/get/all"
+      );
+      setServices(data.services);
+    } catch (error) {
+      console.log("Error fetching services", error);
+    }
+  };
+
+  const fetchServicesFilterByCustomerId = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        `https://pinaca-0-server.onrender.com/api/services/getAllServicesFilterByCustomerId/${customerId}`
+      );
+      setServices(data.services);
+    } catch (error) {
+      console.log("Error fetching services", error);
+    }
+  }, [customerId]);
+
+  const fetchCustomersFilterByServiceId = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        `https://pinaca-0-server.onrender.com/api/customer/getAllCustomersFilterByServiceId/${serviceId}`
+      );
+      setCustomers(data.customers);
+    } catch (error) {
+      console.log("Error fetching customers", error);
+    }
+  }, [serviceId]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleUploadFile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("file", selectedFile!);
+      formData.append("serviceId", serviceId);
+      formData.append(
+        "serviceName",
+        services.filter((service) => service._id === serviceId)[0].service
+      );
+      formData.append("generatedOn", format(date!, "yyyy-MM-dd"));
+
+      const { data } = await axios({
+        url: `https://pinaca-0-server.onrender.com/api/customer/uploadReport/${customerId}`,
+        method: "PATCH",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("data", data);
+
+      toast({
+        title: data.message,
+      });
+
+      setIsLoading(false);
+      setOpenUploadReportModel(false);
+    } catch (error: any) {
+      console.log("Error while uploading", error);
+      toast({
+        variant: "destructive",
+        title: error.response.data.message,
+      });
+      setIsLoading(false);
+      setOpenUploadReportModel(false);
+    }
+  };
+
+  useEffect(() => {
+    if (serviceId === "" || serviceId === "all") {
+      fetchCustomers();
+    } else {
+      fetchCustomersFilterByServiceId();
+    }
+
+    if (customerId === "" || customerId === "all") {
+      fetchServices();
+    } else {
+      fetchServicesFilterByCustomerId();
+    }
+  }, [
+    customerId,
+    fetchServicesFilterByCustomerId,
+    serviceId,
+    fetchCustomersFilterByServiceId,
+  ]);
 
   useEffect(() => {
     dispatch(fetchServiceData({ page: 1, limit: 8 }));
   }, [dispatch]);
 
   useEffect(() => {
-    socket.on("addServiceRequest", async () => {
-      await dispatch(fetchAdmin(adminId));
+    socket.on("addServiceRequest", () => {
+      dispatch(fetchAdmin(adminId));
     });
   }, [dispatch, adminId]);
 
@@ -290,9 +423,10 @@ const Dashboard = () => {
       <div className="flex bg-indigo-50 h-screen">
         <Sidebar active={active} setActive={setActive} />
         <div className="w-full">
-          <Navbar
+          <AdminNavbar
             setOpenAddCustomerModal={setOpenAddCustomerModal}
             setOpenAddServiceModal={setOpenAddServiceModal}
+            setOpenUploadReportModel={setOpenUploadReportModel}
           />
           {active === "settings" ? (
             <Settings />
@@ -300,11 +434,7 @@ const Dashboard = () => {
             <div className="w-11/12 m-auto overflow-auto flex flex-col gap-4 mt-4">
               <div className="flex flex-wrap justify-between">
                 <Customers />
-                <Card
-                  Icon={GrServices}
-                  value={Number(totalServices)}
-                  label="Total Services"
-                />
+                <TotalServices />
                 <Dialog>
                   <DialogTrigger className="lg:w-[30%] h-[80px] flex gap-4 items-center rounded-md bg-white py-2 px-4 cursor-pointer">
                     <div className="w-16 h-16 bg-emerald-100 rounded-full flex justify-center items-center">
@@ -482,6 +612,127 @@ const Dashboard = () => {
               ) : (
                 <Button variant={"primary"} onClick={handleAddService}>
                   Add Service
+                </Button>
+              )}
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={openUploadReportModel}
+        onOpenChange={setOpenUploadReportModel}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Report</DialogTitle>
+            <hr className="border border-gray-200" />
+          </DialogHeader>
+          <form onSubmit={handleUploadFile}>
+            <div className="flex flex-col gap-4">
+              <Select onValueChange={setCustomerId} required>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Customer" />
+                </SelectTrigger>
+                <SelectContent
+                  className={`${customers.length > 8 ? "h-[280px]" : ""}`}
+                >
+                  {customers.length > 0 ? (
+                    <>
+                      {customers.length > 0 &&
+                        customers.map((customer: ICustomer) => {
+                          return (
+                            <SelectItem
+                              key={customer._id}
+                              value={customer._id}
+                              className="text-xs"
+                            >
+                              {customer.customerName}
+                            </SelectItem>
+                          );
+                        })}
+                    </>
+                  ) : (
+                    <p className="text-sm p-2">No Customers Found.</p>
+                  )}
+                </SelectContent>
+              </Select>
+              <Select onValueChange={setServiceId} required>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Service" />
+                </SelectTrigger>
+                <SelectContent
+                  className={`${services.length > 8 ? "h-[280px]" : ""}`}
+                >
+                  {services.length > 0 ? (
+                    <>
+                      {services.length > 0 &&
+                        services.map((service: IService) => (
+                          <SelectItem
+                            key={service._id}
+                            value={service._id}
+                            className="text-xs"
+                          >
+                            {service.service}
+                          </SelectItem>
+                        ))}
+                    </>
+                  ) : (
+                    <p className="p-2 text-sm">No Services Found.</p>
+                  )}
+                </SelectContent>
+              </Select>
+
+              <div>
+                <Label htmlFor="report">Select Report Generated Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "min-w-full justify-start text-left font-normal",
+                        !date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      initialFocus
+                      required
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <Label htmlFor="report">Select Report</Label>
+                <Input
+                  id="report"
+                  type="file"
+                  className="w-full"
+                  onChange={handleFileChange}
+                  required
+                />
+                <p className="text-sm italic text-red-700 leading-1">
+                  Max file size: 10MB
+                </p>
+              </div>
+
+              {isLoading ? (
+                <LoadingButton />
+              ) : (
+                <Button
+                  type="submit"
+                  variant={"primary"}
+                  disabled
+                  className="cursor-not-allowed"
+                >
+                  Upload
                 </Button>
               )}
             </div>

@@ -35,30 +35,37 @@ interface ICurrentPageData extends IReports {
 }
 
 const DownloadReportButton = ({
-  customerId,
-  serviceId,
+  awsReportKey,
   setOpen,
 }: {
-  customerId: string;
-  serviceId: string;
+  awsReportKey: string;
   setOpen: (open: boolean) => void;
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  console.log("customerId:", customerId, "serviceId:", serviceId);
 
   const downloadReport = useCallback(() => {
+    setLoading(true);
     axios({
-      url: `https://pinaca-0-server.onrender.com/api/auth/reports/download/${customerId}/${serviceId}`,
+      url: `https://pinaca-0-server.onrender.com/api/customer/reports/download/${awsReportKey}`,
       method: "GET",
       responseType: "blob",
     })
       .then((response) => {
-        const file = new Blob([response.data], { type: "application/pdf" });
-        const fileURL = URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = fileURL;
-        a.download = "report.pdf";
-        a.click();
+        const url = window.URL.createObjectURL(
+          new Blob([response.data], { type: "application/pdf" })
+        );
+
+        // Create a temporary link element
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", awsReportKey); // Set the desired file name
+        document.body.appendChild(link);
+
+        // Trigger the download
+        link.click();
+
+        // Clean up
+        link.parentNode?.removeChild(link);
         setLoading(false);
         setOpen(false);
       })
@@ -72,7 +79,7 @@ const DownloadReportButton = ({
         setLoading(false);
         setOpen(false);
       });
-  }, [customerId, serviceId, setOpen]);
+  }, [awsReportKey, setOpen]);
 
   return loading ? (
     <LoadingButton />
@@ -95,15 +102,17 @@ export const columns: ColumnDef<ICurrentPageData>[] = [
     cell: ({ row }) => <p>{row.getValue("serviceName")}</p>,
   },
   {
-    accessorKey: "activateOn",
-    header: "Start Date",
+    accessorKey: "generatedOn",
+    header: "Report Generation Date",
     cell: ({ row }) => (
       <p>
         {moment(
-          row.original.activateOn !== "DD/MM/YYYY"
-            ? row.original.activateOn
+          row.original.generatedOn !== "DD/MM/YYYY"
+            ? row.original.generatedOn
             : "01/01/2022"
-        ).format("l")}
+        )
+          .locale("en-in")
+          .format("DD/MM/YYYY")}
       </p>
     ),
   },
@@ -111,8 +120,7 @@ export const columns: ColumnDef<ICurrentPageData>[] = [
     accessorKey: "action",
     cell: ({ row }) => (
       <DownloadReportButton
-        customerId={row.original.customerId}
-        serviceId={row.original.serviceId}
+        awsReportKey={row.original.awsReportKey}
         setOpen={row.original.setOpen}
       />
     ),

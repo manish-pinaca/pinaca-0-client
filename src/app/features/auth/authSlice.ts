@@ -30,7 +30,6 @@ export interface Admin {
   _id: string;
   name: string;
   email: string;
-  notifications: Notifications[];
   requestedServices: RequestedServices[];
 }
 

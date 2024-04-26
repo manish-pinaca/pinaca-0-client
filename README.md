@@ -30,4 +30,4 @@ npm install
 npm run dev
 ```
 
-Now open your preferred browser and navigate to http://localhost:5173
+Now open your preferred browser and navigate to http://192.168.43.174:5173

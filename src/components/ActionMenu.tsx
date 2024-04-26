@@ -2,12 +2,14 @@ interface IActionMenuProps {
   visible: boolean;
   setOpenAddCustomerModal: (open: boolean) => void;
   setOpenAddServiceModal: (open: boolean) => void;
+  setOpenUploadReportModel: (open: boolean) => void;
 }
 
 const ActionMenu = ({
   visible,
   setOpenAddCustomerModal,
   setOpenAddServiceModal,
+  setOpenUploadReportModel,
 }: IActionMenuProps) => {
   if (!visible) return;
   return (
@@ -27,6 +29,15 @@ const ActionMenu = ({
           onClick={() => setOpenAddServiceModal(true)}
         >
           Add Service
+        </p>
+      </div>
+      <hr />
+      <div className="px-3 group/item flex flex-row gap-3 items-center w-full">
+        <p
+          className="text-white text-sm group-hover/item:underline"
+          onClick={() => setOpenUploadReportModel(true)}
+        >
+          Upload Report
         </p>
       </div>
     </div>

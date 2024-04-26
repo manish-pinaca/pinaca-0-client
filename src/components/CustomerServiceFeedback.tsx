@@ -9,6 +9,9 @@ import { Input } from "./ui/input";
 import axios from "axios";
 import { toast } from "./ui/use-toast";
 import LoadingButton from "./LoadingButton";
+import { io } from "socket.io-client";
+
+const socket = io("https://pinaca-0-server.onrender.com");
 
 const CustomerServiceFeedback = ({
   serviceName,
@@ -42,7 +45,7 @@ const CustomerServiceFeedback = ({
           date: new Date().toUTCString(),
         }
       );
-      console.log(data);
+      socket.emit("sendFeedback");
       toast({
         title: "Feedback sent",
         description: data.message,

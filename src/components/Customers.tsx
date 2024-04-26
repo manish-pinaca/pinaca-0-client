@@ -75,7 +75,7 @@ export const columns: ColumnDef<ICustomer>[] = [
   },
   {
     accessorKey: "activateOn",
-    header: "Incorporation Date",
+    header: "Start Date",
     cell: ({ row }) =>
       row.original.activeServices.length > 0 ? (
         row.original.activeServices.map((activeService: IActiveService) => (
@@ -84,7 +84,7 @@ export const columns: ColumnDef<ICustomer>[] = [
               activeService.activateOn !== "DD/MM/YYYY"
                 ? activeService.activateOn
                 : "01/01/2022"
-            ).format("l")}
+            ).format("DD/MM/YYYY")}
           </p>
         ))
       ) : (

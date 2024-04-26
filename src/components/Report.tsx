@@ -20,7 +20,8 @@ export interface IReports {
   serviceId: string;
   customerName: string;
   serviceName: string;
-  activateOn: string;
+  generatedOn: string;
+  awsReportKey: string;
 }
 
 const Report = () => {
@@ -73,10 +74,46 @@ const Report = () => {
     }
   };
 
+  const fetchServicesFilterByCustomerId = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        `https://pinaca-0-server.onrender.com/api/services/getAllServicesFilterByCustomerId/${customerId}`
+      );
+      setServices(data.services);
+    } catch (error) {
+      console.log("Error fetching services", error);
+    }
+  }, [customerId]);
+
+  const fetchCustomersFilterByServiceId = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        `https://pinaca-0-server.onrender.com/api/customer/getAllCustomersFilterByServiceId/${serviceId}`
+      );
+      setCustomers(data.customers);
+    } catch (error) {
+      console.log("Error fetching customers", error);
+    }
+  }, [serviceId]);
+
   useEffect(() => {
-    fetchCustomers();
-    fetchServices();
-  }, []);
+    if (serviceId === "" || serviceId === "all") {
+      fetchCustomers();
+    } else {
+      fetchCustomersFilterByServiceId();
+    }
+
+    if (customerId === "" || customerId === "all") {
+      fetchServices();
+    } else {
+      fetchServicesFilterByCustomerId();
+    }
+  }, [
+    customerId,
+    fetchServicesFilterByCustomerId,
+    serviceId,
+    fetchCustomersFilterByServiceId,
+  ]);
   return (
     <div className="w-[28%] bg-white p-4 rounded-sm flex flex-col gap-4">
       <div className="flex flex-col gap-1">
@@ -89,42 +126,58 @@ const Report = () => {
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Customer" />
             </SelectTrigger>
-            <SelectContent className="h-[300px]">
-              <SelectItem key={"all"} value="all" className="text-xs">
-                All customers
-              </SelectItem>
-              {customers.length > 0 &&
-                customers.map((customer: ICustomer) => {
-                  return (
-                    <SelectItem
-                      key={customer._id}
-                      value={customer._id}
-                      className="text-xs"
-                    >
-                      {customer.customerName}
-                    </SelectItem>
-                  );
-                })}
+            <SelectContent
+              className={`${customers.length > 8 ? "h-[280px]" : ""}`}
+            >
+              {customers.length > 0 ? (
+                <>
+                  <SelectItem key={"all"} value="all" className="text-xs">
+                    All customers
+                  </SelectItem>
+                  {customers.length > 0 &&
+                    customers.map((customer: ICustomer) => {
+                      return (
+                        <SelectItem
+                          key={customer._id}
+                          value={customer._id}
+                          className="text-xs"
+                        >
+                          {customer.customerName}
+                        </SelectItem>
+                      );
+                    })}
+                </>
+              ) : (
+                <p className="text-sm p-2">No Customers Found.</p>
+              )}
             </SelectContent>
           </Select>
           <Select onValueChange={setServiceId}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Service" />
             </SelectTrigger>
-            <SelectContent className="h-[300px]">
-              <SelectItem key={"all"} value="all" className="text-xs">
-                All services
-              </SelectItem>
-              {services.length > 0 &&
-                services.map((service: IService) => (
-                  <SelectItem
-                    key={service._id}
-                    value={service._id}
-                    className="text-xs"
-                  >
-                    {service.service}
+            <SelectContent
+              className={`${services.length > 8 ? "h-[280px]" : ""}`}
+            >
+              {services.length > 0 ? (
+                <>
+                  <SelectItem key={"all"} value="all" className="text-xs">
+                    All services
                   </SelectItem>
-                ))}
+                  {services.length > 0 &&
+                    services.map((service: IService) => (
+                      <SelectItem
+                        key={service._id}
+                        value={service._id}
+                        className="text-xs"
+                      >
+                        {service.service}
+                      </SelectItem>
+                    ))}
+                </>
+              ) : (
+                <p className="p-2 text-sm">No Services Found.</p>
+              )}
             </SelectContent>
           </Select>
         </div>

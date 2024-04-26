@@ -48,10 +48,10 @@ const DetailFeedback = ({
   const [open, setOpen] = useState<boolean>(false);
 
   return feedback.length < 100 ? (
-    <p>{feedback}</p>
+    <p className="text-sm">{feedback}</p>
   ) : (
     <>
-      <p>
+      <p className="text-sm">
         {feedback.slice(0, 100)}...
         <Button
           size={"xs"}
@@ -73,7 +73,7 @@ const DetailFeedback = ({
             </div>
             <div className="flex flex-col items-end">
               <p className="text-sm italic">Date:</p>
-              <p className="font-medium">{moment(date).format("l")}</p>
+              <p className="font-medium">{moment(date).format("DD/MM/YYYY")}</p>
             </div>
             <div>
               <p className="text-sm italic">Service Name:</p>
@@ -114,7 +114,9 @@ export const columns: ColumnDef<IFeedbacks>[] = [
     accessorKey: "createdAt",
     header: "Commented On",
     cell: ({ row }) => (
-      <p className="text-sm">{moment(row.getValue("createdAt")).format("l")}</p>
+      <p className="text-sm">
+        {moment(row.getValue("createdAt")).format("DD/MM/YYYY")}
+      </p>
     ),
   },
   {

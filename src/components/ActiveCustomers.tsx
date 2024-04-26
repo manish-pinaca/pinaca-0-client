@@ -59,7 +59,7 @@ export const columns: ColumnDef<ICustomer>[] = [
             row.original.activeService.activateOn !== "DD/MM/YYYY"
               ? row.original.activeService.activateOn
               : "01/01/2022"
-          ).format("l")}
+          ).format("DD/MM/YYYY")}
         </p>
       ) : (
         <p>-</p>
