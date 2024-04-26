@@ -84,7 +84,7 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
   return (
     <>
       <div className="flex py-4 px-12 bg-white justify-between">
-        <div className="flex items-center bg-gray-100 relative rounded-md">
+        <div className="flex items-center bg-gray-100 relative rounded-md invisible">
           <IoIosSearch className="absolute left-2" />
           <Input
             placeholder="Search..."
