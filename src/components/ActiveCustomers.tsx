@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import PaginatedItem from "./PaginatedItem";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ColumnDef,
   VisibilityState,
@@ -9,7 +9,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import axios from "axios";
 import { Badge } from "./ui/badge";
 import {
   Table,
@@ -19,18 +18,11 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { IActiveService } from "@/app/features/customers/customerSlice";
 import moment from "moment";
+import { IActiveCustomer } from "@/pages/Dashboard";
 
-interface ICustomer {
-  _id: string;
-  customerName: string;
-  userEmail: string;
-  adminId: string;
-  activeService: IActiveService;
-}
 
-export const columns: ColumnDef<ICustomer>[] = [
+export const columns: ColumnDef<IActiveCustomer>[] = [
   {
     accessorKey: "customerName",
     header: "Customer Name",
@@ -77,11 +69,10 @@ export const columns: ColumnDef<ICustomer>[] = [
   },
 ];
 
-const ActiveCustomers = () => {
+const ActiveCustomers = ({ customers }: { customers: IActiveCustomer[] }) => {
   const limit = 4;
   const [page, setPage] = useState<number>(1);
-  const [customers, setCustomers] = useState<ICustomer[]>([]);
-  const [currentPageData, setCurrentPageData] = useState<ICustomer[]>([]);
+  const [currentPageData, setCurrentPageData] = useState<IActiveCustomer[]>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   useEffect(() => {
@@ -89,18 +80,6 @@ const ActiveCustomers = () => {
     const endIndex = startIndex + limit;
     setCurrentPageData(customers.slice(startIndex, endIndex));
   }, [page, customers]);
-
-  const fetchCustomers = useCallback(async () => {
-    try {
-      const { data } = await axios.get(
-        "https://pinaca-0-server.onrender.com/api/customer/get/all/activeCustomers"
-      );
-
-      setCustomers(data.customers);
-    } catch (error) {
-      console.log("Error fetching customers", error);
-    }
-  }, []);
 
   const table = useReactTable({
     data: currentPageData,
@@ -113,14 +92,11 @@ const ActiveCustomers = () => {
     },
   });
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [fetchCustomers]);
   return (
     <div className="w-[70%] overflow-auto bg-white px-8 py-4 rounded-sm flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <p className="text-xl font-medium">Customers</p>
+          <p className="text-xl font-medium">Recent Customers</p>
           <PaginatedItem
             setPage={setPage}
             totalItems={customers.length}

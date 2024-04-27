@@ -18,7 +18,7 @@ import { format } from "date-fns";
 
 import {
   IService,
-  fetchServiceData,
+  fetchActiveServiceData,
 } from "@/app/features/services/serviceSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import Card from "@/components/Card";
@@ -71,6 +71,7 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import axios from "axios";
 import CustomerNavbar from "@/components/CustomerNavbar";
+import { useSocketContext } from "@/context/socketTypes";
 
 const socket = io("https://pinaca-0-server.onrender.com");
 
@@ -224,7 +225,12 @@ const Action = ({ row }: { row: any }) => {
           size={"sm"}
           variant="primary"
           onClick={addServiceRequest}
-          disabled={rejectedServices.includes(row.original["_id"])}
+          disabled={
+            rejectedServices.filter(
+              (service: IRejectedService) =>
+                service.serviceId === row.original["_id"]
+            ).length > 0
+          }
         >
           Add Service
         </Button>
@@ -259,6 +265,8 @@ export const columns: ColumnDef<IService>[] = [
 ];
 
 const CustomerDashboard = () => {
+  const { event } = useSocketContext();
+
   const limit = 6;
 
   const [open, setOpen] = useState<boolean>(false);
@@ -355,18 +363,23 @@ const CustomerDashboard = () => {
 
   useEffect(() => {
     dispatch(fetchCustomer(customerId));
-    dispatch(fetchServiceData({ page, limit }));
+    dispatch(fetchActiveServiceData({ page, limit }));
   }, [dispatch, page, customerId]);
 
   useEffect(() => {
-    socket.on("accepted-request", () => {
+    if (
+      event.includes("serviceAdded") ||
+      event.includes("serviceStatusChanged")
+    ) {
+      dispatch(fetchActiveServiceData({ page, limit }));
       dispatch(fetchCustomer(customerId));
-    });
-
-    socket.on("serviceAdded", () => {
-      dispatch(fetchServiceData({ page, limit }));
-    });
-  }, [dispatch, customerId, page]);
+    } else if (
+      event.includes("accepted-request") ||
+      event.includes("rejected-request")
+    ) {
+      dispatch(fetchCustomer(customerId));
+    }
+  }, [customerId, dispatch, event, page]);
 
   useEffect(() => {
     if (!open) {

@@ -12,9 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import axios from "axios";
 import moment from "moment";
 import { RxCross1 } from "react-icons/rx";
-import { io } from "socket.io-client";
-
-const socket = io("https://pinaca-0-server.onrender.com");
+import { useSocketContext } from "@/context/socketTypes";
 
 interface IAdminNavbar {
   setOpenAddCustomerModal: (open: boolean) => void;
@@ -39,6 +37,7 @@ const AdminNavbar = ({
   setOpenAddServiceModal,
   setOpenUploadReportModel,
 }: IAdminNavbar) => {
+  const { event } = useSocketContext();
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
   const [showActionMenu, setShowActionMenu] = useState<boolean>(false);
   const [openSheet, setOpenSheet] = useState<boolean>(false);
@@ -87,14 +86,10 @@ const AdminNavbar = ({
   }, [fetchNotifications]);
 
   useEffect(() => {
-    socket.on("feedbackReceived", () => {
+    if (event) {
       fetchNotifications();
-    });
-
-    socket.on("addServiceRequest", () => {
-      fetchNotifications();
-    });
-  }, [fetchNotifications]);
+    }
+  }, [fetchNotifications, event]);
   return (
     <>
       <div className="flex py-4 px-12 bg-white justify-between">

@@ -5,10 +5,16 @@ import axios from "axios";
 export interface IService {
   service: string;
   _id: string;
+  status?: string;
 }
 
 export interface IInitialState {
   isLoading: boolean;
+  allServices: {
+    services: IService[];
+    page: number;
+    totalServices: number;
+  };
   serviceData: {
     services: IService[];
     page: number;
@@ -19,6 +25,11 @@ export interface IInitialState {
 
 const initialState: IInitialState = {
   isLoading: false,
+  allServices: {
+    services: [],
+    page: 0,
+    totalServices: 0,
+  },
   serviceData: {
     services: [],
     page: 0,
@@ -27,8 +38,26 @@ const initialState: IInitialState = {
   error: null,
 };
 
-export const fetchServiceData = createAsyncThunk(
-  "api/fetchServiceData",
+export const fetchActiveServiceData = createAsyncThunk(
+  "api/fetchActiveServiceData",
+  async (payload: GetServiceParams) => {
+    try {
+      const { page, limit } = payload;
+
+      const { data } = await axios.get(
+        `https://pinaca-0-server.onrender.com/api/services/getAllServices/active?page=${page}&limit=${limit}`
+      );
+      return data;
+    } catch (error: any) {
+      throw new Error(
+        error.response.data ? error.response.data.message : error.message
+      );
+    }
+  }
+);
+
+export const fetchAllServices = createAsyncThunk(
+  "api/fetchAllServices",
   async (payload: GetServiceParams) => {
     try {
       const { page, limit } = payload;
@@ -36,6 +65,7 @@ export const fetchServiceData = createAsyncThunk(
       const { data } = await axios.get(
         `https://pinaca-0-server.onrender.com/api/services/get/all?page=${page}&limit=${limit}`
       );
+
       return data;
     } catch (error: any) {
       throw new Error(
@@ -51,14 +81,26 @@ const serviceSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchServiceData.pending, (state) => {
+      .addCase(fetchActiveServiceData.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(fetchServiceData.fulfilled, (state, action) => {
+      .addCase(fetchActiveServiceData.fulfilled, (state, action) => {
         state.isLoading = false;
         state.serviceData = action.payload;
       })
-      .addCase(fetchServiceData.rejected, (state, action) => {
+      .addCase(fetchActiveServiceData.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message!;
+      });
+    builder
+      .addCase(fetchAllServices.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchAllServices.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.allServices = action.payload;
+      })
+      .addCase(fetchAllServices.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message!;
       });

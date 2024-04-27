@@ -66,7 +66,7 @@ const Report = () => {
   const fetchServices = async () => {
     try {
       const { data } = await axios.get(
-        "https://pinaca-0-server.onrender.com/api/services/get/all"
+        "https://pinaca-0-server.onrender.com/api/services/getAllServices/active"
       );
       setServices(data.services);
     } catch (error) {

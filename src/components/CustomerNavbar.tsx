@@ -13,20 +13,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { io } from "socket.io-client";
 import axios from "axios";
 import { INotification } from "./AdminNavbar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import moment from "moment";
 import { RxCross1 } from "react-icons/rx";
-
-const socket = io("https://pinaca-0-server.onrender.com");
+import { useSocketContext } from "@/context/socketTypes";
 
 interface ICustomerNavbar {
   setOpenUploadReportModel: (open: boolean) => void;
 }
 
 const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
+  const { event } = useSocketContext();
+
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
   const [openSheet, setOpenSheet] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<INotification[]>([]);
@@ -60,9 +60,10 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
             },
           }
         );
-        await fetchNotifications();
       } catch (error) {
         console.log("Error Updating notifications", error);
+      } finally {
+        await fetchNotifications();
       }
     },
     [customerId, fetchNotifications]
@@ -77,10 +78,10 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
   }, [fetchNotifications]);
 
   useEffect(() => {
-    socket.on("serviceAdded", () => {
+    if (event) {
       fetchNotifications();
-    });
-  }, [fetchNotifications]);
+    }
+  }, [fetchNotifications, event]);
   return (
     <>
       <div className="flex py-4 px-12 bg-white justify-between">
@@ -152,10 +153,11 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
                       {moment(notification.createdAt).format("LLL")}
                     </p>
                   </div>
-                  <div className="cursor-pointer w-1/4 flex justify-end">
-                    <RxCross1
-                      onClick={() => handleMarkedAsRead(notification._id)}
-                    />
+                  <div
+                    className="cursor-pointer w-1/4 flex justify-end"
+                    onClick={() => handleMarkedAsRead(notification._id)}
+                  >
+                    <RxCross1 />
                   </div>
                 </div>
               ))}

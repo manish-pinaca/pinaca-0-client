@@ -1,26 +1,140 @@
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import PaginatedItem from "./PaginatedItem";
 import {
   IService,
-  fetchServiceData,
+  fetchAllServices,
 } from "@/app/features/services/serviceSlice";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ColumnDef,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import axios from "axios";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { io } from "socket.io-client";
 
-const Services = () => {
-  const limit = 8;
-  const [page, setPage] = useState<number>(1);
+const socket = io("https://pinaca-0-server.onrender.com");
+
+const Status = ({ status }: { status: string }) => {
+  return status === "active" ? (
+    <Badge variant={"success"}>Active</Badge>
+  ) : status === "disabled" ? (
+    <Badge variant={"secondary"}>Disabled</Badge>
+  ) : (
+    <Badge variant={"destructive"}>Removed</Badge>
+  );
+};
+
+const Action = ({
+  serviceId,
+  status,
+}: {
+  serviceId: string;
+  status: string;
+}) => {
   const dispatch = useAppDispatch();
 
-  const serviceData = useAppSelector(
-    (state) => state.serviceReducer.serviceData
+  const currentPage = useAppSelector(
+    (state) => state.serviceReducer.allServices.page
   );
 
-  const totalServices = useAppSelector(
-    (state) => state.serviceReducer.serviceData?.totalServices
-  )!;
+  const changeServiceStatus = useCallback(
+    async (status: string) => {
+      try {
+        await axios.patch(
+          `https://pinaca-0-server.onrender.com/api/services/changeServiceStatus/${serviceId}/${status}`
+        );
+        socket.emit("changeServiceStatus");
+      } catch (error) {
+        console.log("Error updating service status", error);
+      } finally {
+        dispatch(fetchAllServices({ page: currentPage, limit: 4 }));
+      }
+    },
+    [currentPage, dispatch, serviceId]
+  );
+
+  return status === "active" ? (
+    <Button
+      variant="destructive"
+      onClick={() => changeServiceStatus("disabled")}
+    >
+      Disable
+    </Button>
+  ) : status === "disabled" ? (
+    <Button
+      variant="destructive"
+      onClick={() => changeServiceStatus("removed")}
+    >
+      Remove
+    </Button>
+  ) : (
+    <Button variant="primary" onClick={() => changeServiceStatus("active")}>
+      Re-Activate
+    </Button>
+  );
+};
+
+export const columns: ColumnDef<IService>[] = [
+  {
+    accessorKey: "service",
+    header: "Service Name",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("service")}</div>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <Status status={row.original.status!} />,
+  },
+  {
+    accessorKey: "action",
+    header: "Action",
+    cell: ({ row }) => (
+      <Action serviceId={row.original._id} status={row.original.status!} />
+    ),
+  },
+];
+
+const Services = () => {
+  const limit = 4;
+
+  const dispatch = useAppDispatch();
+
+  const [page, setPage] = useState<number>(1);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const allServices = useAppSelector(
+    (state) => state.serviceReducer.allServices
+  );
+
+  const table = useReactTable({
+    data: allServices.services,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    state: {
+      columnVisibility,
+    },
+  });
 
   useEffect(() => {
-    dispatch(fetchServiceData({ page, limit }));
+    dispatch(fetchAllServices({ page, limit }));
   }, [page, dispatch]);
   return (
     <div className="w-[70%] overflow-auto bg-white px-8 py-4 rounded-sm flex flex-col gap-4">
@@ -30,26 +144,53 @@ const Services = () => {
           <PaginatedItem
             setPage={setPage}
             limit={limit}
-            totalItems={totalServices}
+            totalItems={allServices.totalServices}
           />
         </div>
         <hr className="border border-gray-200" />
       </div>
-      <div className="grid grid-cols-2 gap-4 overflow-auto">
-        {serviceData?.services &&
-          serviceData.services.length > 0 &&
-          serviceData.services.map((service: IService) => (
-            <div
-              key={service._id}
-              className="rounded-md border border-gray-500 py-1 px-2"
-            >
-              <p className="text-xs text-gray-500 leading-none">Service name</p>
-              <p className="text-sm leading-normal font-normal">
-                {service.service}
-              </p>
-            </div>
+      <Table className="border">
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead
+                    key={header.id}
+                    className="text-center lg:text-base font-medium"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
           ))}
-      </div>
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="text-center lg:text-xs">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 };

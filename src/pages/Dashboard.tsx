@@ -11,7 +11,7 @@ import Sidebar from "@/components/Sidebar";
 import Services from "@/components/Services";
 import {
   IService,
-  fetchServiceData,
+  fetchActiveServiceData,
 } from "@/app/features/services/serviceSlice";
 import {
   RequestedServices,
@@ -58,7 +58,9 @@ import AdminNavbar from "@/components/AdminNavbar";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -71,9 +73,21 @@ import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { ICustomer } from "@/app/features/customers/customerSlice";
+import {
+  IActiveService,
+  ICustomer,
+} from "@/app/features/customers/customerSlice";
+import { useSocketContext } from "@/context/socketTypes";
 
 const socket = io("https://pinaca-0-server.onrender.com");
+
+export interface IActiveCustomer {
+  _id: string;
+  customerName: string;
+  userEmail: string;
+  adminId: string;
+  activeService: IActiveService;
+}
 
 const Accept = ({ row }: { row: any }) => {
   const dispatch = useAppDispatch();
@@ -184,6 +198,8 @@ const Dashboard = () => {
 
   const dispatch = useAppDispatch();
 
+  const { event } = useSocketContext();
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [active, setActive] = useState<string>("overview");
   const [page, setPage] = useState<number>(1);
@@ -203,10 +219,13 @@ const Dashboard = () => {
     useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>();
   const [customers, setCustomers] = useState<ICustomer[]>([]);
+  const [activeCustomers, setActiveCustomers] = useState<IActiveCustomer[]>([]);
   const [services, setServices] = useState<IService[]>([]);
   const [customerId, setCustomerId] = useState<string>("");
   const [serviceId, setServiceId] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [activeServices, setActiveServices] = useState<IService[]>([]);
+  const [inactiveServices, setInactiveServices] = useState<IService[]>([]);
 
   const adminId = useAppSelector((state) => state.authReducer.admin._id);
 
@@ -273,9 +292,21 @@ const Dashboard = () => {
       setIsLoading(false);
       setOpenAddServiceModal(false);
       setServiceName("");
-      dispatch(fetchServiceData({ page: 1, limit: 8 }));
+      dispatch(fetchActiveServiceData({ page: 1, limit: 8 }));
     }
   }, [serviceName, dispatch, adminId]);
+
+  const fetchActiveCustomers = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        "https://pinaca-0-server.onrender.com/api/customer/get/all/activeCustomers"
+      );
+
+      setActiveCustomers(data.customers);
+    } catch (error) {
+      console.log("Error fetching customers", error);
+    }
+  }, []);
 
   const fetchCustomers = async () => {
     try {
@@ -299,27 +330,27 @@ const Dashboard = () => {
     }
   };
 
-  const fetchServicesFilterByCustomerId = useCallback(async () => {
-    try {
-      const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/getAllServicesFilterByCustomerId/${customerId}`
-      );
-      setServices(data.services);
-    } catch (error) {
-      console.log("Error fetching services", error);
-    }
-  }, [customerId]);
+  // const fetchServicesFilterByCustomerId = useCallback(async () => {
+  //   try {
+  //     const { data } = await axios.get(
+  //       `https://pinaca-0-server.onrender.com/api/services/getAllServicesFilterByCustomerId/${customerId}`
+  //     );
+  //     setServices(data.services);
+  //   } catch (error) {
+  //     console.log("Error fetching services", error);
+  //   }
+  // }, [customerId]);
 
-  const fetchCustomersFilterByServiceId = useCallback(async () => {
-    try {
-      const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/customer/getAllCustomersFilterByServiceId/${serviceId}`
-      );
-      setCustomers(data.customers);
-    } catch (error) {
-      console.log("Error fetching customers", error);
-    }
-  }, [serviceId]);
+  // const fetchCustomersFilterByServiceId = useCallback(async () => {
+  //   try {
+  //     const { data } = await axios.get(
+  //       `https://pinaca-0-server.onrender.com/api/customer/getAllCustomersFilterByServiceId/${serviceId}`
+  //     );
+  //     setCustomers(data.customers);
+  //   } catch (error) {
+  //     console.log("Error fetching customers", error);
+  //   }
+  // }, [serviceId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -339,6 +370,7 @@ const Dashboard = () => {
         services.filter((service) => service._id === serviceId)[0].service
       );
       formData.append("generatedOn", format(date!, "yyyy-MM-dd"));
+      formData.append("adminId", adminId);
 
       const { data } = await axios({
         url: `https://pinaca-0-server.onrender.com/api/customer/uploadReport/${customerId}`,
@@ -348,7 +380,10 @@ const Dashboard = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("data", data);
+
+      if (inactiveServices.find((service) => service._id === serviceId)) {
+        socket.emit("addService");
+      }
 
       toast({
         title: data.message,
@@ -362,39 +397,59 @@ const Dashboard = () => {
         variant: "destructive",
         title: error.response.data.message,
       });
+    } finally {
+      fetchActiveCustomers();
+      fetchCustomers();
+      fetchServices();
       setIsLoading(false);
       setOpenUploadReportModel(false);
     }
   };
 
   useEffect(() => {
-    if (serviceId === "" || serviceId === "all") {
-      fetchCustomers();
-    } else {
-      fetchCustomersFilterByServiceId();
-    }
+    if (customerId) {
+      const selectedCustomer = customers.filter((c) => c._id === customerId)[0];
+      const activeServices =
+        selectedCustomer?.activeServices.length > 0
+          ? selectedCustomer.activeServices.map((service) => {
+              return {
+                _id: service?.serviceId,
+                service: service?.serviceName,
+              };
+            })
+          : [];
+      const inactiveServices =
+        activeServices.length > 0
+          ? services.filter(
+              (service) =>
+                !activeServices.find(
+                  (activeService) => activeService._id === service._id
+                )
+            )
+          : services;
 
-    if (customerId === "" || customerId === "all") {
-      fetchServices();
-    } else {
-      fetchServicesFilterByCustomerId();
+      setActiveServices(activeServices);
+      setInactiveServices(inactiveServices);
     }
-  }, [
-    customerId,
-    fetchServicesFilterByCustomerId,
-    serviceId,
-    fetchCustomersFilterByServiceId,
-  ]);
+  }, [customerId, customers, services]);
 
   useEffect(() => {
-    dispatch(fetchServiceData({ page: 1, limit: 8 }));
+    fetchCustomers();
+    fetchServices();
+    fetchActiveCustomers();
+  }, [fetchActiveCustomers]);
+
+  useEffect(() => {
+    dispatch(fetchActiveServiceData({ page: 1, limit: 8 }));
   }, [dispatch]);
 
   useEffect(() => {
-    socket.on("addServiceRequest", () => {
+    if (event.includes("addServiceRequest")) {
       dispatch(fetchAdmin(adminId));
-    });
-  }, [dispatch, adminId]);
+    } else if (event.includes("accepted-request")) {
+      fetchActiveCustomers();
+    }
+  }, [dispatch, adminId, event, fetchActiveCustomers]);
 
   useEffect(() => {
     dispatch(fetchAdmin(adminId));
@@ -516,7 +571,7 @@ const Dashboard = () => {
               </div>
               <div className="flex flex-wrap justify-between">
                 {active === "overview" ? (
-                  <ActiveCustomers />
+                  <ActiveCustomers customers={activeCustomers} />
                 ) : active === "services" ? (
                   <Services />
                 ) : active === "feedback" ? (
@@ -663,10 +718,38 @@ const Dashboard = () => {
                 <SelectContent
                   className={`${services.length > 8 ? "h-[280px]" : ""}`}
                 >
-                  {services.length > 0 ? (
-                    <>
-                      {services.length > 0 &&
-                        services.map((service: IService) => (
+                  {customerId !== "" ? (
+                    activeServices.length > 0 ? (
+                      <>
+                        <SelectGroup>
+                          <SelectLabel>Active Services</SelectLabel>
+                          {activeServices.map((service) => (
+                            <SelectItem
+                              key={service._id}
+                              value={service._id}
+                              className="text-xs"
+                            >
+                              {service.service}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                        <SelectGroup>
+                          <SelectLabel>Inactive Services</SelectLabel>
+                          {inactiveServices.map((service) => (
+                            <SelectItem
+                              key={service._id}
+                              value={service._id}
+                              className="text-xs"
+                            >
+                              {service.service}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </>
+                    ) : (
+                      <SelectGroup>
+                        <SelectLabel>Inactive Services</SelectLabel>
+                        {inactiveServices.map((service) => (
                           <SelectItem
                             key={service._id}
                             value={service._id}
@@ -675,9 +758,19 @@ const Dashboard = () => {
                             {service.service}
                           </SelectItem>
                         ))}
-                    </>
+                      </SelectGroup>
+                    )
                   ) : (
-                    <p className="p-2 text-sm">No Services Found.</p>
+                    services.length > 0 &&
+                    services.map((service) => (
+                      <SelectItem
+                        key={service._id}
+                        value={service._id}
+                        className="text-xs"
+                      >
+                        {service.service}
+                      </SelectItem>
+                    ))
                   )}
                 </SelectContent>
               </Select>

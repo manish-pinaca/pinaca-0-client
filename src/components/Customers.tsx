@@ -32,6 +32,7 @@ import {
 } from "@/app/features/customers/customerSlice";
 import { Badge } from "./ui/badge";
 import moment from "moment";
+import { useSocketContext } from "@/context/socketTypes";
 
 const ActiveService = ({
   activeService,
@@ -110,6 +111,8 @@ export const columns: ColumnDef<ICustomer>[] = [
 const Customers = () => {
   const limit = 6;
 
+  const { event } = useSocketContext();
+
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [customers, setCustomers] = useState([]);
@@ -142,6 +145,12 @@ const Customers = () => {
   useEffect(() => {
     fetchCustomerData();
   }, [fetchCustomerData]);
+
+  useEffect(() => {
+    if (event.includes("addService")) {
+      fetchCustomerData();
+    }
+  }, [event, fetchCustomerData]);
 
   useEffect(() => {
     if (!open) {

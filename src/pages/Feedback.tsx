@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useSocketContext } from "@/context/socketTypes";
 import {
   ColumnDef,
   VisibilityState,
@@ -137,6 +138,8 @@ export const columns: ColumnDef<IFeedbacks>[] = [
 const Feedback = () => {
   const limit = 4;
 
+  const { event } = useSocketContext();
+
   const [page, setPage] = useState<number>(1);
   const [feedbacks, setFeedbacks] = useState<IFeedbacks[]>([]);
   const [totalFeedbacks, setTotalFeedbacks] = useState<number>(0);
@@ -168,6 +171,12 @@ const Feedback = () => {
       columnVisibility,
     },
   });
+
+  useEffect(() => {
+    if (event.includes("feedbackReceived")) {
+      fetchFeedbacks();
+    }
+  }, [event, fetchFeedbacks]);
 
   return (
     <div className="w-[70%] overflow-auto bg-white px-8 py-4 rounded-sm flex flex-col gap-4">
