@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { useSocketContext } from "@/context/socketTypes";
+import { useAppSelector } from "@/app/hooks";
 
 const TotalServices = () => {
   const { event } = useSocketContext();
@@ -18,6 +19,8 @@ const TotalServices = () => {
   const [services, setServices] = useState<IService[]>([]);
   const [disabledServices, setDisabledServices] = useState<IService[]>([]);
   const [removedServices, setRemovedServices] = useState<IService[]>([]);
+
+  const totalServices = useAppSelector(state => state.serviceReducer.allServices.totalServices)
 
   const fetchServices = useCallback(async () => {
     try {
@@ -80,9 +83,7 @@ const TotalServices = () => {
           <GrServices size={24} />
         </div>
         <div>
-          <p className="text-4xl font-medium">
-            {services.length + disabledServices.length + removedServices.length}
-          </p>
+          <p className="text-4xl font-medium">{totalServices}</p>
           <p className="text-gray-500 text-sm">Total Services</p>
         </div>
       </div>

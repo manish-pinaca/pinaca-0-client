@@ -12,6 +12,7 @@ import Services from "@/components/Services";
 import {
   IService,
   fetchActiveServiceData,
+  fetchAllServices,
 } from "@/app/features/services/serviceSlice";
 import {
   RequestedServices,
@@ -472,6 +473,10 @@ const Dashboard = () => {
 
     setRequestedServicesData(requestedServices.slice(startIndex, endIndex));
   }, [page, requestedServices]);
+
+  useEffect(() => {
+    dispatch(fetchAllServices({ page: 1, limit: 4 }));
+  }, [page, dispatch]);
 
   return (
     <>
