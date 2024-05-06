@@ -69,20 +69,35 @@ const Action = ({
 
   return status === "active" ? (
     <Button
+      size={"2xs"}
       variant="destructive"
       onClick={() => changeServiceStatus("disabled")}
     >
       Disable
     </Button>
   ) : status === "disabled" ? (
-    <Button
-      variant="destructive"
-      onClick={() => changeServiceStatus("removed")}
-    >
-      Remove
-    </Button>
+    <div className="flex gap-1 justify-center">
+      <Button
+        size={"2xs"}
+        variant="primary"
+        onClick={() => changeServiceStatus("active")}
+      >
+        Re-Activate
+      </Button>
+      <Button
+        size={"2xs"}
+        variant="destructive"
+        onClick={() => changeServiceStatus("removed")}
+      >
+        Remove
+      </Button>
+    </div>
   ) : (
-    <Button variant="primary" onClick={() => changeServiceStatus("active")}>
+    <Button
+      size={"2xs"}
+      variant="primary"
+      onClick={() => changeServiceStatus("active")}
+    >
       Re-Activate
     </Button>
   );
