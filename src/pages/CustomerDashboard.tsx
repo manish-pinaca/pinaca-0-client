@@ -583,8 +583,8 @@ const CustomerDashboard = () => {
                 <Button
                   type="submit"
                   variant={"primary"}
-                  disabled
-                  className="cursor-not-allowed"
+                  // disabled
+                  // className="cursor-not-allowed"
                 >
                   Upload
                 </Button>

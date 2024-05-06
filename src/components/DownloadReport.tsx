@@ -35,10 +35,12 @@ interface ICurrentPageData extends IReports {
 }
 
 const DownloadReportButton = ({
-  awsReportKey,
+  // awsReportKey,
+  filename,
   setOpen,
 }: {
-  awsReportKey: string;
+  // awsReportKey: string;
+  filename: string;
   setOpen: (open: boolean) => void;
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,7 +48,7 @@ const DownloadReportButton = ({
   const downloadReport = useCallback(() => {
     setLoading(true);
     axios({
-      url: `https://pinaca-0-server.onrender.com/api/customer/reports/download/${awsReportKey}`,
+      url: `https://pinaca-0-server.onrender.com/api/customer/reports/download/${filename}`,
       method: "GET",
       responseType: "blob",
     })
@@ -58,7 +60,7 @@ const DownloadReportButton = ({
         // Create a temporary link element
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", awsReportKey); // Set the desired file name
+        link.setAttribute("download", filename?.split("-")[1]); // Set the desired file name
         document.body.appendChild(link);
 
         // Trigger the download
@@ -79,7 +81,7 @@ const DownloadReportButton = ({
         setLoading(false);
         setOpen(false);
       });
-  }, [awsReportKey, setOpen]);
+  }, [filename, setOpen]);
 
   return loading ? (
     <LoadingButton />
@@ -120,7 +122,8 @@ export const columns: ColumnDef<ICurrentPageData>[] = [
     accessorKey: "action",
     cell: ({ row }) => (
       <DownloadReportButton
-        awsReportKey={row.original.awsReportKey}
+        // awsReportKey={row.original.awsReportKey!}
+        filename={row.original.filename!}
         setOpen={row.original.setOpen}
       />
     ),

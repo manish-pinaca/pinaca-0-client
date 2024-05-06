@@ -20,7 +20,9 @@ const TotalServices = () => {
   const [disabledServices, setDisabledServices] = useState<IService[]>([]);
   const [removedServices, setRemovedServices] = useState<IService[]>([]);
 
-  const totalServices = useAppSelector(state => state.serviceReducer.allServices.totalServices)
+  const totalServices = useAppSelector(
+    (state) => state.serviceReducer.allServices.totalServices
+  );
 
   const fetchServices = useCallback(async () => {
     try {

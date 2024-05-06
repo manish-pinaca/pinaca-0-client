@@ -21,7 +21,8 @@ export interface IReports {
   customerName: string;
   serviceName: string;
   generatedOn: string;
-  awsReportKey: string;
+  awsReportKey?: string;
+  filename?: string;
 }
 
 const Report = () => {
