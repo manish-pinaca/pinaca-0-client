@@ -80,7 +80,7 @@ import {
 } from "@/app/features/customers/customerSlice";
 import { useSocketContext } from "@/context/socketTypes";
 
-const socket = io("http://3.82.11.201:5000");
+const socket = io("https://pinaca-0-server.onrender.com");
 
 export interface IActiveCustomer {
   _id: string;
@@ -274,7 +274,7 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
       const { data } = await axios.post(
-        "http://3.82.11.201:5000/api/services/add",
+        "https://pinaca-0-server.onrender.com/api/services/add",
         { service: serviceName, adminId }
       );
       socket.emit("addService");
@@ -300,7 +300,7 @@ const Dashboard = () => {
   const fetchActiveCustomers = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        "http://3.82.11.201:5000/api/customer/get/all/activeCustomers"
+        "https://pinaca-0-server.onrender.com/api/customer/get/all/activeCustomers"
       );
 
       setActiveCustomers(data.customers);
@@ -312,7 +312,7 @@ const Dashboard = () => {
   const fetchCustomers = async () => {
     try {
       const { data } = await axios.get(
-        "http://3.82.11.201:5000/api/customer/get/all"
+        "https://pinaca-0-server.onrender.com/api/customer/get/all"
       );
       setCustomers(data.customers);
     } catch (error) {
@@ -323,7 +323,7 @@ const Dashboard = () => {
   const fetchServices = async () => {
     try {
       const { data } = await axios.get(
-        "http://3.82.11.201:5000/api/services/get/all"
+        "https://pinaca-0-server.onrender.com/api/services/get/all"
       );
       setServices(data.services);
     } catch (error) {
@@ -334,7 +334,7 @@ const Dashboard = () => {
   // const fetchServicesFilterByCustomerId = useCallback(async () => {
   //   try {
   //     const { data } = await axios.get(
-  //       `http://3.82.11.201:5000/api/services/getAllServicesFilterByCustomerId/${customerId}`
+  //       `https://pinaca-0-server.onrender.com/api/services/getAllServicesFilterByCustomerId/${customerId}`
   //     );
   //     setServices(data.services);
   //   } catch (error) {
@@ -345,7 +345,7 @@ const Dashboard = () => {
   // const fetchCustomersFilterByServiceId = useCallback(async () => {
   //   try {
   //     const { data } = await axios.get(
-  //       `http://3.82.11.201:5000/api/customer/getAllCustomersFilterByServiceId/${serviceId}`
+  //       `https://pinaca-0-server.onrender.com/api/customer/getAllCustomersFilterByServiceId/${serviceId}`
   //     );
   //     setCustomers(data.customers);
   //   } catch (error) {
@@ -374,7 +374,7 @@ const Dashboard = () => {
       formData.append("adminId", adminId);
 
       const { data } = await axios({
-        url: `http://3.82.11.201:5000/api/customer/uploadReport/${customerId}`,
+        url: `https://pinaca-0-server.onrender.com/api/customer/uploadReport/${customerId}`,
         method: "PATCH",
         data: formData,
         headers: {

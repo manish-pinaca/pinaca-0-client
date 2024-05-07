@@ -49,7 +49,7 @@ const AdminNavbar = ({
   const fetchNotifications = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `http://3.82.11.201:5000/api/notifications/get/${adminId}`
+        `https://pinaca-0-server.onrender.com/api/notifications/get/${adminId}`
       );
       setNotifications(data.notifications);
     } catch (error) {
@@ -61,7 +61,7 @@ const AdminNavbar = ({
     async (notificationId: string) => {
       try {
         await axios.put(
-          `http://3.82.11.201:5000/api/notifications/markAsRed/${notificationId}/${adminId}`,
+          `https://pinaca-0-server.onrender.com/api/notifications/markAsRed/${notificationId}/${adminId}`,
           {},
           {
             headers: {

@@ -48,7 +48,7 @@ const DownloadReportButton = ({
   const downloadReport = useCallback(() => {
     setLoading(true);
     axios({
-      url: `http://3.82.11.201:5000/api/customer/reports/download/${filename}`,
+      url: `https://pinaca-0-server.onrender.com/api/customer/reports/download/${filename}`,
       method: "GET",
       responseType: "blob",
     })

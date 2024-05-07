@@ -133,7 +133,7 @@ const Customers = () => {
   const fetchCustomerData = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `http://3.82.11.201:5000/api/customer/get/all?page=${page}&limit=${limit}`
+        `https://pinaca-0-server.onrender.com/api/customer/get/all?page=${page}&limit=${limit}`
       );
       setTotalCustomers(data.totalCustomers);
       setCustomers(data.customers);
