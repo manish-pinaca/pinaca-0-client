@@ -36,7 +36,7 @@ const Report = () => {
   const fetchReports = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/auth/reports/get/${customerId}/${serviceId}`
+        `http://3.82.11.201:5000/api/auth/reports/get/${customerId}/${serviceId}`
       );
       setReports(data);
       setOpen(true);
@@ -56,7 +56,7 @@ const Report = () => {
   const fetchCustomers = async () => {
     try {
       const { data } = await axios.get(
-        "https://pinaca-0-server.onrender.com/api/customer/get/all"
+        "http://3.82.11.201:5000/api/customer/get/all"
       );
       setCustomers(data.customers);
     } catch (error) {
@@ -67,7 +67,7 @@ const Report = () => {
   const fetchServices = async () => {
     try {
       const { data } = await axios.get(
-        "https://pinaca-0-server.onrender.com/api/services/getAllServices/active"
+        "http://3.82.11.201:5000/api/services/getAllServices/active"
       );
       setServices(data.services);
     } catch (error) {
@@ -78,7 +78,7 @@ const Report = () => {
   const fetchServicesFilterByCustomerId = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/getAllServicesFilterByCustomerId/${customerId}`
+        `http://3.82.11.201:5000/api/services/getAllServicesFilterByCustomerId/${customerId}`
       );
       setServices(data.services);
     } catch (error) {
@@ -89,7 +89,7 @@ const Report = () => {
   const fetchCustomersFilterByServiceId = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/customer/getAllCustomersFilterByServiceId/${serviceId}`
+        `http://3.82.11.201:5000/api/customer/getAllCustomersFilterByServiceId/${serviceId}`
       );
       setCustomers(data.customers);
     } catch (error) {

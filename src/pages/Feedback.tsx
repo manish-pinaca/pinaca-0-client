@@ -148,7 +148,7 @@ const Feedback = () => {
   const fetchFeedbacks = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/feedback/getAllFeedbacks?page=${page}&limit=${limit}`
+        `http://3.82.11.201:5000/api/feedback/getAllFeedbacks?page=${page}&limit=${limit}`
       );
       setFeedbacks(data.feedbacks);
       setTotalFeedbacks(data.totalFeedbacks);

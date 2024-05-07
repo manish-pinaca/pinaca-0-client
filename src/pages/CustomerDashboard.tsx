@@ -73,7 +73,7 @@ import axios from "axios";
 import CustomerNavbar from "@/components/CustomerNavbar";
 import { useSocketContext } from "@/context/socketTypes";
 
-const socket = io("https://pinaca-0-server.onrender.com");
+const socket = io("http://3.82.11.201:5000");
 
 const Status = ({ row }: { row: any }) => {
   const activeServices = useAppSelector(
@@ -324,7 +324,7 @@ const CustomerDashboard = () => {
       formData.append("generatedOn", format(date!, "yyyy-MM-dd"));
 
       const { data } = await axios({
-        url: `https://pinaca-0-server.onrender.com/api/customer/uploadReport/${customerId}`,
+        url: `http://3.82.11.201:5000/api/customer/uploadReport/${customerId}`,
         method: "PATCH",
         data: formData,
         headers: {
