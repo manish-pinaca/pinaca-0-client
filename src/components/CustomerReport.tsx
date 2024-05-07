@@ -28,7 +28,7 @@ const CustomerReport = () => {
   const fetchReports = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `http://3.82.11.201:5000/api/auth/reports/get/${customerId}/${serviceId}`
+        `https://pinaca-0-server.onrender.com/api/auth/reports/get/${customerId}/${serviceId}`
       );
       setReports(data);
       setOpen(true);
