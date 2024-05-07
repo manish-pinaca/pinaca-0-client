@@ -54,7 +54,7 @@ const DownloadReportButton = ({
     })
       .then((response) => {
         const url = window.URL.createObjectURL(
-          new Blob([response.data], { type: "application/*" })
+          new Blob([response.data])
         );
 
         // Create a temporary link element
@@ -102,6 +102,11 @@ export const columns: ColumnDef<ICurrentPageData>[] = [
     accessorKey: "serviceName",
     header: "Service Opted",
     cell: ({ row }) => <p>{row.getValue("serviceName")}</p>,
+  },
+  {
+    accessorKey: "filename",
+    header: "Filename",
+    cell: ({ row }) => <p>{row.original.filename?.split("-")[1]}</p>
   },
   {
     accessorKey: "generatedOn",
