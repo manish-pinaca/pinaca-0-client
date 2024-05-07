@@ -66,7 +66,7 @@ export const register = createAsyncThunk(
   async (payload: RegisterParams) => {
     try {
       const { data } = await axios.post(
-        "https://pinaca-0-server.onrender.com/api/auth/signup",
+        "http://3.82.11.201:5000/api/auth/signup",
         payload
       );
 
@@ -84,7 +84,7 @@ export const login = createAsyncThunk(
   async (payload: LoginParams) => {
     try {
       const { data } = await axios.post(
-        "https://pinaca-0-server.onrender.com/api/auth/login",
+        "http://3.82.11.201:5000/api/auth/login",
         payload
       );
 
@@ -102,7 +102,7 @@ export const fetchCustomer = createAsyncThunk(
   async (customerId: string) => {
     try {
       const { data } = await axios(
-        `https://pinaca-0-server.onrender.com/api/auth/customer/${customerId}`
+        `http://3.82.11.201:5000/api/auth/customer/${customerId}`
       );
       return data;
     } catch (error: any) {
@@ -118,7 +118,7 @@ export const fetchAdmin = createAsyncThunk(
   async (adminId: string) => {
     try {
       const { data } = await axios(
-        `https://pinaca-0-server.onrender.com/api/auth/admin/${adminId}`
+        `http://3.82.11.201:5000/api/auth/admin/${adminId}`
       );
       return data;
     } catch (error: any) {

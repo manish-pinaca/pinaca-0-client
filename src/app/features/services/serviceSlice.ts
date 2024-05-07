@@ -45,7 +45,7 @@ export const fetchActiveServiceData = createAsyncThunk(
       const { page, limit } = payload;
 
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/getAllServices/active?page=${page}&limit=${limit}`
+        `http://3.82.11.201:5000/api/services/getAllServices/active?page=${page}&limit=${limit}`
       );
       return data;
     } catch (error: any) {
@@ -63,7 +63,7 @@ export const fetchAllServices = createAsyncThunk(
       const { page, limit } = payload;
 
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/services/get/all?page=${page}&limit=${limit}`
+        `http://3.82.11.201:5000/api/services/get/all?page=${page}&limit=${limit}`
       );
 
       return data;
