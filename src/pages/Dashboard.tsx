@@ -403,7 +403,7 @@ const Dashboard = () => {
       fetchCustomers();
       fetchServices();
       setIsLoading(false);
-      setOpenUploadReportModel(false);
+      // setOpenUploadReportModel(false);
     }
   };
 
