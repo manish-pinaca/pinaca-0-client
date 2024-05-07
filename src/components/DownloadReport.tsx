@@ -54,13 +54,13 @@ const DownloadReportButton = ({
     })
       .then((response) => {
         const url = window.URL.createObjectURL(
-          new Blob([response.data])
+          new Blob([response.data], { type: "application/*" })
         );
 
         // Create a temporary link element
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", filename?.split("-")[1]); // Set the desired file name
+        link.setAttribute("download", filename.replace(/\d{13}-/, "")); // Set the desired file name
         document.body.appendChild(link);
 
         // Trigger the download
@@ -106,7 +106,7 @@ export const columns: ColumnDef<ICurrentPageData>[] = [
   {
     accessorKey: "filename",
     header: "Filename",
-    cell: ({ row }) => <p>{row.original.filename?.split("-")[1]}</p>
+    cell: ({ row }) => <p>{row.original.filename?.replace(/\d{13}-/, "")}</p>,
   },
   {
     accessorKey: "generatedOn",
