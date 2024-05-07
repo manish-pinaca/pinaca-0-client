@@ -48,13 +48,13 @@ const DownloadReportButton = ({
   const downloadReport = useCallback(() => {
     setLoading(true);
     axios({
-      url: `https://pinaca-0-server.onrender.com/api/customer/reports/download/${filename}`,
+      url: `http://3.82.11.201:5000/api/customer/reports/download/${filename}`,
       method: "GET",
       responseType: "blob",
     })
       .then((response) => {
         const url = window.URL.createObjectURL(
-          new Blob([response.data], { type: "application/pdf" })
+          new Blob([response.data], { type: "application/*" })
         );
 
         // Create a temporary link element

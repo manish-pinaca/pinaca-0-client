@@ -52,7 +52,7 @@ export const fetchCustomerData = createAsyncThunk(
     try {
       const { page, limit } = payload;
       const { data } = await axios.get(
-        `https://pinaca-0-server.onrender.com/api/customer/get/all?page=${page}&limit=${limit}`
+        `http://3.82.11.201:5000/api/customer/get/all?page=${page}&limit=${limit}`
       );
       return data;
     } catch (error: any) {

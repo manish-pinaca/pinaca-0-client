@@ -11,7 +11,7 @@ import { toast } from "./ui/use-toast";
 import LoadingButton from "./LoadingButton";
 import { io } from "socket.io-client";
 
-const socket = io("https://pinaca-0-server.onrender.com");
+const socket = io("http://3.82.11.201:5000");
 
 const CustomerServiceFeedback = ({
   serviceName,
@@ -34,7 +34,7 @@ const CustomerServiceFeedback = ({
       setIsLoading(true);
 
       const { data } = await axios.post(
-        "https://pinaca-0-server.onrender.com/api/feedback/send",
+        "http://3.82.11.201:5000/api/feedback/send",
         {
           customerId: customer._id,
           customerName: customer.customerName,

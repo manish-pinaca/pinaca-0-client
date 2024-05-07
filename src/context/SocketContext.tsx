@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { SocketContext } from "./socketTypes";
 
-const socket = io("https://pinaca-0-server.onrender.com");
+const socket = io("http://3.82.11.201:5000");
 
 interface SocketProviderProps {
   children: ReactNode;
