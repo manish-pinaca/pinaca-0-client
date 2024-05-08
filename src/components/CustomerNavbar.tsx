@@ -30,6 +30,7 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
   const [openSheet, setOpenSheet] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<INotification[]>([]);
+  const [removeNotification, setRemoveNotification] = useState<string>("");
 
   const userName = useAppSelector(
     (state) => state.authReducer.customer.customerName
@@ -60,10 +61,12 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
             },
           }
         );
+        setRemoveNotification(notificationId);
       } catch (error) {
         console.log("Error Updating notifications", error);
       } finally {
         await fetchNotifications();
+        setRemoveNotification("");
       }
     },
     [customerId, fetchNotifications]
@@ -152,7 +155,9 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
               {notifications.map((notification) => (
                 <div
                   key={notification._id}
-                  className="flex items-center gap-2 py-2 border-b border-gray-200"
+                  className={`flex items-center gap-2 py-2 border-b border-gray-200 ${
+                    removeNotification === notification._id ? "remove" : ""
+                  }`}
                 >
                   <div className="">
                     <p className="text-base">{notification.message}</p>

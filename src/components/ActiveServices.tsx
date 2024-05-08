@@ -79,7 +79,7 @@ const ActiveServices = () => {
     <div className="w-[70%] bg-white px-8 py-4 rounded-sm flex flex-col gap-4 overflow-auto">
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <p className="text-xl font-medium">Active Services</p>
+          <p className="text-xl font-medium">Recent Services</p>
           <PaginatedItem
             setPage={setPage}
             limit={limit}

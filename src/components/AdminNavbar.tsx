@@ -42,6 +42,7 @@ const AdminNavbar = ({
   const [showActionMenu, setShowActionMenu] = useState<boolean>(false);
   const [openSheet, setOpenSheet] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<INotification[]>([]);
+  const [removeNotification, setRemoveNotification] = useState<string>("");
 
   const userName = useAppSelector((state) => state.authReducer.admin.name);
   const adminId = useAppSelector((state) => state.authReducer.admin._id);
@@ -69,9 +70,12 @@ const AdminNavbar = ({
             },
           }
         );
-        await fetchNotifications();
+        setRemoveNotification(notificationId);
       } catch (error) {
         console.log("Error Updating notifications", error);
+      } finally {
+        await fetchNotifications();
+        setRemoveNotification("");
       }
     },
     [adminId, fetchNotifications]
@@ -164,7 +168,9 @@ const AdminNavbar = ({
               {notifications.map((notification) => (
                 <div
                   key={notification._id}
-                  className="flex items-center gap-2 py-2 border-b border-gray-200"
+                  className={`flex items-center gap-2 py-2 border-b border-gray-200 ${
+                    removeNotification === notification._id ? "remove" : ""
+                  }`}
                 >
                   <div className="">
                     <p className="text-base">{notification.message}</p>
