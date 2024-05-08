@@ -109,12 +109,14 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
             className="relative cursor-pointer"
             onClick={() => setOpenSheet(true)}
           >
-            <IoMdNotificationsOutline size={28} />
+            <IoMdNotificationsOutline size={32} />
             {notifications.length > 0 && (
-              <div
-                className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"
-                style={{ transform: "translate(10%, -10%)" }}
-              />
+              <>
+                <span className="sr-only">Notifications</span>
+                <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
+                  {notifications.length}
+                </div>
+              </>
             )}
           </div>
           <div
@@ -136,12 +138,17 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
         </div>
       </div>
       <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-        <SheetContent>
-          <SheetHeader className="mb-0.5">
-            <SheetTitle>Notifications</SheetTitle>
+        <SheetContent className="min-h-screen flex flex-col">
+          <SheetHeader>
+            <SheetTitle className="flex items-center">
+              Notifications
+              <span className="inline-flex items-center justify-center w-6 h-6 ms-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+                {notifications.length}
+              </span>
+            </SheetTitle>
           </SheetHeader>
           {notifications.length > 0 ? (
-            <div>
+            <div className="overflow-auto">
               {notifications.map((notification) => (
                 <div
                   key={notification._id}
