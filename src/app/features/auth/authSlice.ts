@@ -7,7 +7,7 @@ import {
   IRejectedService,
 } from "../customers/customerSlice";
 
-enum Role {
+export enum Role {
   Admin = "admin",
   Customer = "customer",
 }

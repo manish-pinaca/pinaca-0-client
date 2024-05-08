@@ -136,13 +136,13 @@ const Signup = () => {
               )}
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="email">
+              <Label htmlFor="password">
                 Password<sup className="text-red-500">*</sup>
               </Label>
               <div className="relative">
                 <Input
                   type={passwordType}
-                  id="email"
+                  id="password"
                   value={password}
                   autoComplete="off"
                   onChange={(e) => setPassword(e.target.value)}
