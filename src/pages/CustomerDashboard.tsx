@@ -2,7 +2,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useEffect, useState } from "react";
 import { GrServices } from "react-icons/gr";
-import { MdOutlineManageHistory } from "react-icons/md";
 import { io } from "socket.io-client";
 import { Calendar as CalendarIcon } from "lucide-react";
 import {
@@ -21,7 +20,6 @@ import {
   fetchActiveServiceData,
 } from "@/app/features/services/serviceSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import Card from "@/components/Card";
 import Sidebar from "@/components/Sidebar";
 import ActiveServices from "@/components/ActiveServices";
 import {
@@ -72,6 +70,8 @@ import { Calendar } from "@/components/ui/calendar";
 import axios from "axios";
 import CustomerNavbar from "@/components/CustomerNavbar";
 import { useSocketContext } from "@/context/socketTypes";
+import ActiveServicesModal from "@/components/ActiveServicesModal";
+import PendingServiceRequestModal from "@/components/PendingServiceRequestModal";
 
 const socket = io("http://3.82.11.201:5000");
 
@@ -291,10 +291,6 @@ const CustomerDashboard = () => {
     (state) => state.authReducer.customer.activeServices
   );
 
-  const pendingRequests = useAppSelector(
-    (state) => state.authReducer.customer.pendingServices
-  );
-
   const totalServices = useAppSelector(
     (state) => state.serviceReducer.serviceData?.totalServices
   );
@@ -477,16 +473,8 @@ const CustomerDashboard = () => {
                     </Table>
                   </DialogContent>
                 </Dialog>
-                <Card
-                  Icon={GrServices}
-                  value={activeServices?.length}
-                  label="Active Services"
-                />
-                <Card
-                  Icon={MdOutlineManageHistory}
-                  value={pendingRequests?.length}
-                  label="Pending Request"
-                />
+                <ActiveServicesModal />
+                <PendingServiceRequestModal />
               </div>
               <div className="flex flex-wrap justify-between">
                 {active === "overview" ? (
