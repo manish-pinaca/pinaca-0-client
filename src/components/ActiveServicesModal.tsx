@@ -86,13 +86,13 @@ const ActiveServicesModal = () => {
           <p className="text-4xl text-left font-medium">
             {activeServices.length}
           </p>
-          <p className="text-gray-500 text-sm">{"Total Services"}</p>
+          <p className="text-gray-500 text-sm">{"Total Active Services"}</p>
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-max max-h-[90%] overflow-auto">
         <DialogHeader className="mt-4">
           <div className="flex justify-between">
-            <DialogTitle>Total Services</DialogTitle>
+            <DialogTitle>Active Services</DialogTitle>
             <PaginatedItem
               setPage={setPage}
               limit={limit}
