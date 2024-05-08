@@ -2,7 +2,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useEffect, useState } from "react";
 import { GrServices } from "react-icons/gr";
-import { io } from "socket.io-client";
 import { Calendar as CalendarIcon } from "lucide-react";
 import {
   ColumnDef,
@@ -12,7 +11,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import moment from "moment";
 import { format } from "date-fns";
 
 import {
@@ -72,10 +70,10 @@ import CustomerNavbar from "@/components/CustomerNavbar";
 import { useSocketContext } from "@/context/socketTypes";
 import ActiveServicesModal from "@/components/ActiveServicesModal";
 import PendingServiceRequestModal from "@/components/PendingServiceRequestModal";
+import CustomerServices from "@/components/CustomerServices";
 
-const socket = io("http://3.82.11.201:5000");
-
-const Status = ({ row }: { row: any }) => {
+export const Status = ({ row }: { row: any }) => {
+  console.log(row)
   const activeServices = useAppSelector(
     (state) => state.authReducer.customer.activeServices
   );
@@ -111,134 +109,6 @@ const Status = ({ row }: { row: any }) => {
   );
 };
 
-const OptedOn = ({ row }: { row: any }) => {
-  const activeServices = useAppSelector(
-    (state) => state.authReducer.customer.activeServices
-  );
-
-  const pendingServices = useAppSelector(
-    (state) => state.authReducer.customer.pendingServices
-  );
-
-  const rejectedServices = useAppSelector(
-    (state) => state.authReducer.customer.rejectedServices
-  );
-
-  return (
-    <>
-      {activeServices.filter(
-        (service: IActiveService) => service.serviceId === row.original["_id"]
-      ).length > 0 ? (
-        <p>
-          {moment(
-            activeServices.filter(
-              (service) => service.serviceId === row.original["_id"]
-            )[0].activateOn
-          ).format("DD/MM/YYYY")}
-        </p>
-      ) : pendingServices.filter(
-          (service: IPendingService) =>
-            service.serviceId === row.original["_id"]
-        ).length > 0 ? (
-        <p>
-          {moment(
-            pendingServices.filter(
-              (service) => service.serviceId === row.original["_id"]
-            )[0].requestedOn
-          ).format("DD/MM/YYYY")}
-        </p>
-      ) : rejectedServices.filter(
-          (service: IRejectedService) =>
-            service.serviceId === row.original["_id"]
-        ).length > 0 ? (
-        <p>
-          {moment(
-            rejectedServices.filter(
-              (service) => service.serviceId === row.original["_id"]
-            )[0].rejectedOn
-          ).format("DD/MM/YYYY")}
-        </p>
-      ) : (
-        "-"
-      )}
-    </>
-  );
-};
-
-const Action = ({ row }: { row: any }) => {
-  const dispatch = useAppDispatch();
-
-  const customerId = useAppSelector((state) => state.authReducer.customer._id);
-  const adminId = useAppSelector((state) => state.authReducer.customer.adminId);
-
-  const activeServices = useAppSelector(
-    (state) => state.authReducer.customer.activeServices
-  );
-  const pendingServices = useAppSelector(
-    (state) => state.authReducer.customer.pendingServices
-  );
-  const rejectedServices = useAppSelector(
-    (state) => state.authReducer.customer.rejectedServices
-  );
-
-  const addServiceRequest = () => {
-    socket.emit(
-      "addServiceRequest",
-      {
-        customerId: customerId,
-        serviceId: row.original["_id"],
-        adminId,
-      },
-      (err: any, response: any) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(response);
-          toast({
-            variant: "default",
-            title: "Service request sent!",
-            description: response.message,
-          });
-          dispatch(fetchCustomer(customerId));
-        }
-      }
-    );
-  };
-
-  return (
-    <>
-      {activeServices.filter(
-        (service: IActiveService) => service.serviceId === row.original["_id"]
-      ).length > 0 ? (
-        <Button variant="destructive" disabled>
-          Deactivate
-        </Button>
-      ) : pendingServices.filter(
-          (service: IPendingService) =>
-            service.serviceId === row.original["_id"]
-        ).length > 0 ? (
-        <Button variant="destructive" disabled>
-          Revoke
-        </Button>
-      ) : (
-        <Button
-          size={"sm"}
-          variant="primary"
-          onClick={addServiceRequest}
-          disabled={
-            rejectedServices.filter(
-              (service: IRejectedService) =>
-                service.serviceId === row.original["_id"]
-            ).length > 0
-          }
-        >
-          Add Service
-        </Button>
-      )}
-    </>
-  );
-};
-
 export const columns: ColumnDef<IService>[] = [
   {
     accessorKey: "service",
@@ -251,17 +121,7 @@ export const columns: ColumnDef<IService>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => <Status row={row} />,
-  },
-  {
-    accessorKey: "activateOn",
-    header: "Opted On",
-    cell: ({ row }) => <OptedOn row={row} />,
-  },
-  {
-    accessorKey: "action",
-    header: "Action",
-    cell: ({ row }) => <Action row={row} />,
-  },
+  }
 ];
 
 const CustomerDashboard = () => {
@@ -393,7 +253,7 @@ const CustomerDashboard = () => {
           ) : active === "settings" ? (
             <Settings />
           ) : (
-            <div className="w-11/12 m-auto h-[75%] overflow-auto flex flex-col gap-6 mt-8">
+            <div className="w-11/12 h-[75%] m-auto overflow-auto flex flex-col gap-6 mt-8">
               <div className="flex flex-wrap justify-between">
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger className="lg:w-[30%] h-[100px] flex gap-4 items-center rounded-md bg-white p-6 cursor-pointer">
@@ -480,7 +340,7 @@ const CustomerDashboard = () => {
                 {active === "overview" ? (
                   <ActiveServices />
                 ) : active === "services" ? (
-                  <ActiveServices />
+                  <CustomerServices />
                 ) : null}
                 <CustomerReport />
               </div>
