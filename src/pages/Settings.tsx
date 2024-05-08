@@ -13,13 +13,27 @@ import axios from "axios";
 const CustomerProfile = ({ user }: { user: Customer }) => {
   return (
     <>
-      <div className="flex gap-2">
-        <p className="font-medium">Name:</p>
-        <p>{user.customerName}</p>
+      <div className="mb-2">
+        <label className="block text-gray-700 font-medium">Name</label>
+        <input
+          className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="email"
+          type="text"
+          placeholder="Enter your email address"
+          disabled
+          value={user.customerName}
+        />
       </div>
-      <div className="flex gap-2">
-        <p className="font-medium">Email:</p>
-        <p>{user.customerEmail}</p>
+      <div className="mb-2">
+        <label className="block text-gray-700 font-medium">Email Address</label>
+        <input
+          className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="email"
+          type="email"
+          placeholder="Enter your email address"
+          disabled
+          value={user.customerEmail}
+        />
       </div>
     </>
   );
@@ -28,13 +42,27 @@ const CustomerProfile = ({ user }: { user: Customer }) => {
 const AdminProfile = ({ user }: { user: Admin }) => {
   return (
     <>
-      <div className="flex gap-2">
-        <p className="font-medium">Name:</p>
-        <p>{user.name}</p>
+      <div className="mb-2">
+        <label className="block text-gray-700 font-medium">Name</label>
+        <input
+          className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="email"
+          type="text"
+          placeholder="Enter your email address"
+          disabled
+          value={user.name}
+        />
       </div>
-      <div className="flex gap-2">
-        <p className="font-medium">Email:</p>
-        <p>{user.email}</p>
+      <div className="mb-2">
+        <label className="block text-gray-700 font-medium">Email Address</label>
+        <input
+          className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="email"
+          type="email"
+          placeholder="Enter your email address"
+          disabled
+          value={user.email}
+        />
       </div>
     </>
   );
@@ -68,8 +96,6 @@ const Settings = () => {
   const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setIsLoading(true);
-
     if (password !== confirmPassword) {
       toast({
         variant: "destructive",
@@ -97,6 +123,8 @@ const Settings = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
+      setIsLoading(true);
+      
       axios({
         url: `http://3.82.11.201:5000/api/auth/changePassword/${userRole}/${
           userRole === Role.Admin ? admin._id : customer._id
@@ -124,21 +152,25 @@ const Settings = () => {
     }
   };
   return (
-    <div className="bg-white mt-4 ml-4 p-4 w-1/3 rounded-md">
-      <form className="flex flex-col gap-4" onSubmit={handleChangePassword}>
-        {userRole === Role.Admin ? (
-          <AdminProfile user={admin} />
-        ) : (
-          <CustomerProfile user={customer} />
-        )}
-        <div className="flex justify-between">
-          <p className="font-medium w-1/3">Change Password:</p>
-          <div className="w-2/3">
+    <div className="min-h-[90vh] bg-indigo-50 flex items-center justify-center">
+      <div className="bg-white shadow-md rounded-md px-8 pt-4 pb-4 mb-4 max-w-md w-full">
+        <h1 className="text-center text-2xl font-bold mb-4">Reset Password</h1>
+        <form onSubmit={handleChangePassword}>
+          {userRole === Role.Admin ? (
+            <AdminProfile user={admin} />
+          ) : (
+            <CustomerProfile user={customer} />
+          )}
+          <div className="grid w-full max-w-sm items-center gap-1.5 mb-2">
+            <label className="block text-gray-700 font-medium">
+              Password<sup className="text-red-500">*</sup>
+            </label>
             <div className="relative">
               <Input
                 type={passwordType}
-                className="border"
+                id="password"
                 value={password}
+                autoComplete="off"
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
@@ -160,15 +192,16 @@ const Settings = () => {
               <p className="text-sm italic text-red-500">{errors.password}</p>
             )}
           </div>
-        </div>
-        <div className="flex justify-between">
-          <p className="font-medium w-1/3">Confirm Password:</p>
-          <div className="w-2/3">
+          <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
+            <label className="block text-gray-700 font-medium">
+              Confirm Password<sup className="text-red-500">*</sup>
+            </label>
             <div className="relative">
               <Input
                 type={passwordType}
-                className="border"
+                id="password"
                 value={confirmPassword}
+                autoComplete="off"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
@@ -187,17 +220,17 @@ const Settings = () => {
               )}
             </div>
           </div>
-        </div>
-        <div>
-          {isLoading ? (
-            <LoadingButton />
-          ) : (
-            <Button type="submit" variant="primary" className="w-full">
-              Submit
-            </Button>
-          )}
-        </div>
-      </form>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            {isLoading ? (
+              <LoadingButton />
+            ) : (
+              <Button type="submit" variant="primary">
+                Reset Password
+              </Button>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
