@@ -73,7 +73,7 @@ import PendingServiceRequestModal from "@/components/PendingServiceRequestModal"
 import CustomerServices from "@/components/CustomerServices";
 
 export const Status = ({ row }: { row: any }) => {
-  console.log(row)
+  console.log(row);
   const activeServices = useAppSelector(
     (state) => state.authReducer.customer.activeServices
   );
@@ -121,7 +121,7 @@ export const columns: ColumnDef<IService>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => <Status row={row} />,
-  }
+  },
 ];
 
 const CustomerDashboard = () => {
@@ -180,7 +180,7 @@ const CustomerDashboard = () => {
       formData.append("generatedOn", format(date!, "yyyy-MM-dd"));
 
       const { data } = await axios({
-        url: `http://3.82.11.201:5000/api/customer/uploadReport/${customerId}`,
+        url: `https://pinaca-0-server.onrender.com/api/customer/uploadReport/${customerId}`,
         method: "PATCH",
         data: formData,
         headers: {

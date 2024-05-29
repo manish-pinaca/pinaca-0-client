@@ -34,7 +34,7 @@ import {
 } from "./ui/table";
 import axios from "axios";
 
-const socket = io("http://3.82.11.201:5000");
+const socket = io("https://pinaca-0-server.onrender.com");
 
 const OptedOn = ({ row }: { row: any }) => {
   const activeServices = useAppSelector(
@@ -202,7 +202,7 @@ const CustomerServices = () => {
   const fetchServices = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `http://3.82.11.201:5000/api/services/getAllServices/active?page=${page}&limit=${limit}`
+        `https://pinaca-0-server.onrender.com/api/services/getAllServices/active?page=${page}&limit=${limit}`
       );
       setServices(data.services);
       setTotalServices(data.totalServices);

@@ -27,7 +27,7 @@ const TotalServices = () => {
   const fetchServices = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        "http://3.82.11.201:5000/api/services/getAllServices/active"
+        "https://pinaca-0-server.onrender.com/api/services/getAllServices/active"
       );
       setServices(data.services);
     } catch (error) {
@@ -38,7 +38,7 @@ const TotalServices = () => {
   const fetchDisabledServices = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        "http://3.82.11.201:5000/api/services/getAllServices/disabled"
+        "https://pinaca-0-server.onrender.com/api/services/getAllServices/disabled"
       );
 
       setDisabledServices(data.services);
@@ -50,7 +50,7 @@ const TotalServices = () => {
   const fetchRemovedServices = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        "http://3.82.11.201:5000/api/services/getAllServices/removed"
+        "https://pinaca-0-server.onrender.com/api/services/getAllServices/removed"
       );
 
       setRemovedServices(data.services);

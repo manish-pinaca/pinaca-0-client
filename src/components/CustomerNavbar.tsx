@@ -41,7 +41,7 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
   const fetchNotifications = useCallback(async () => {
     try {
       const { data } = await axios.get(
-        `http://3.82.11.201:5000/api/notifications/get/${customerId}`
+        `https://pinaca-0-server.onrender.com/api/notifications/get/${customerId}`
       );
       setNotifications(data.notifications);
     } catch (error) {
@@ -53,7 +53,7 @@ const CustomerNavbar = ({ setOpenUploadReportModel }: ICustomerNavbar) => {
     async (notificationId: string) => {
       try {
         await axios.put(
-          `http://3.82.11.201:5000/api/notifications/markAsRed/${notificationId}/${customerId}`,
+          `https://pinaca-0-server.onrender.com/api/notifications/markAsRed/${notificationId}/${customerId}`,
           {},
           {
             headers: {

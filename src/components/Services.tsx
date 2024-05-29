@@ -26,7 +26,7 @@ import axios from "axios";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { io } from "socket.io-client";
 
-const socket = io("http://3.82.11.201:5000");
+const socket = io("https://pinaca-0-server.onrender.com");
 
 const Status = ({ status }: { status: string }) => {
   return status === "active" ? (
@@ -55,7 +55,7 @@ const Action = ({
     async (status: string) => {
       try {
         await axios.patch(
-          `http://3.82.11.201:5000/api/services/changeServiceStatus/${serviceId}/${status}`
+          `https://pinaca-0-server.onrender.com/api/services/changeServiceStatus/${serviceId}/${status}`
         );
         socket.emit("changeServiceStatus");
       } catch (error) {

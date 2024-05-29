@@ -124,9 +124,9 @@ const Settings = () => {
       setErrors(newErrors);
     } else {
       setIsLoading(true);
-      
+
       axios({
-        url: `http://3.82.11.201:5000/api/auth/changePassword/${userRole}/${
+        url: `https://pinaca-0-server.onrender.com/api/auth/changePassword/${userRole}/${
           userRole === Role.Admin ? admin._id : customer._id
         }`,
         method: "PATCH",
